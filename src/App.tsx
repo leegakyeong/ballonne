@@ -1,4 +1,5 @@
 import { FreeCamera, Vector3, HemisphericLight, MeshBuilder } from '@babylonjs/core'
+import { Input } from '@/components/ui/input'
 import SceneComponent from './components/3d/SceneComponent'
 import './App.css'
 
@@ -48,6 +49,7 @@ function App() {
   return (
     <>
       <SceneComponent antialias onSceneReady={onSceneReady} onRender={onRender} id="my-canvas" />
+      <Input />
     </>
   )
 }
