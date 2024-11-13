@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Mesh } from '@babylonjs/core'
+import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Mesh, Animation, CircleEase, EasingFunction } from '@babylonjs/core'
 import earcut from 'earcut'
 import { Input } from '@/components/ui/input'
 import SceneComponent from './components/3d/SceneComponent'
@@ -39,7 +39,25 @@ function App() {
       scene,
       earcut
     )
-    // text.position.y = 1;
+
+    if (!text) return
+
+    // text animation
+    const textAnimation = new Animation('easeIn', 'position', 30, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CYCLE)
+    const destination = text.position.add(new Vector3(0, 0, -10))
+
+    const keyframes = [
+      { frame: 0, value: text.position },
+      { frame: 120, value: destination },
+    ]
+    textAnimation.setKeys(keyframes)
+
+    const easingFunction = new CircleEase()
+    easingFunction.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT)
+    textAnimation.setEasingFunction(easingFunction)
+
+    text.animations.push(textAnimation)
+    scene.beginAnimation(text, 0, 120, true)
   }
 
   const onRender = useCallback((scene: Scene) => {
