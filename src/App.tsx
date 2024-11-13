@@ -44,15 +44,15 @@ function App() {
 
     // text animation
     const textMaterial = new StandardMaterial('textMaterial', scene)
-    textMaterial.diffuseColor = new Color3(1, 0, 1)
-    textMaterial.alpha = 0.8
+    textMaterial.diffuseColor = new Color3(1, 1, 0)
+    textMaterial.alpha = 0
     text.material = textMaterial
 
-    const textAnimation = new Animation('easeIn', 'material.diffuseColor', 30, Animation.ANIMATIONTYPE_COLOR3, Animation.ANIMATIONLOOPMODE_CYCLE)
+    const textAnimation = new Animation('easeIn', 'material.alpha', 30, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE)
 
     const keyframes = [
-      { frame: 0, value: (text.material as StandardMaterial).diffuseColor },
-      { frame: 120, value: new Color3(1, 1, 0) },
+      { frame: 0, value: text.material.alpha },
+      { frame: 120, value: 1 },
     ]
     textAnimation.setKeys(keyframes)
 
