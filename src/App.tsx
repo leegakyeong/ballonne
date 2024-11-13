@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Mesh, Animation, CircleEase, EasingFunction } from '@babylonjs/core'
+import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Mesh, Animation, CircleEase, EasingFunction, StandardMaterial, Color3 } from '@babylonjs/core'
 import earcut from 'earcut'
 import { Input } from '@/components/ui/input'
 import SceneComponent from './components/3d/SceneComponent'
@@ -43,12 +43,16 @@ function App() {
     if (!text) return
 
     // text animation
-    const textAnimation = new Animation('easeIn', 'position', 30, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CYCLE)
-    const destination = text.position.add(new Vector3(0, 0, -10))
+    const textMaterial = new StandardMaterial('textMaterial', scene)
+    textMaterial.diffuseColor = new Color3(1, 0, 1)
+    textMaterial.alpha = 0.8
+    text.material = textMaterial
+
+    const textAnimation = new Animation('easeIn', 'material.diffuseColor', 30, Animation.ANIMATIONTYPE_COLOR3, Animation.ANIMATIONLOOPMODE_CYCLE)
 
     const keyframes = [
-      { frame: 0, value: text.position },
-      { frame: 120, value: destination },
+      { frame: 0, value: (text.material as StandardMaterial).diffuseColor },
+      { frame: 120, value: new Color3(1, 1, 0) },
     ]
     textAnimation.setKeys(keyframes)
 
