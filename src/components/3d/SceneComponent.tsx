@@ -10,6 +10,7 @@ type SceneComponentProps = {
   onRender: (scene: Scene) => void
   onSceneReady: (scene: Scene) => void
   id: string
+  userInput: string
 }
 
 export default function SceneComponent({
@@ -19,6 +20,7 @@ export default function SceneComponent({
   sceneOptions,
   onRender,
   onSceneReady,
+  userInput,
   ...rest
 }: SceneComponentProps) {
   const reactCanvas = useRef(null)
@@ -58,6 +60,10 @@ export default function SceneComponent({
       }
     }
   }, [antialias, engineOptions, adaptToDeviceRatio, sceneOptions, onRender, onSceneReady])
+
+  useEffect(() => {
+    console.log(userInput)
+  }, [userInput])
 
   return <canvas ref={reactCanvas} {...rest} />
 }
