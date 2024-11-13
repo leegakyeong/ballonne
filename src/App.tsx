@@ -7,9 +7,8 @@ import './App.css'
 
 function App() {
   const [userInput, setUserInput] = useState('')
-  let box: Mesh
 
- async function onSceneReady(scene: Scene) {
+  async function onSceneReady(scene: Scene) {
     const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
     camera.setTarget(Vector3.Zero());
 
@@ -20,58 +19,80 @@ function App() {
     const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
     light.intensity = 0.7;
 
-    box = MeshBuilder.CreateBox("box", { size: 2 }, scene);
-    box.position.y = 1;
-
-    MeshBuilder.CreateGround("ground", { width: 6, height: 6 }, scene);
-
+    // render text
     const res = await fetch('/src/assets/Phase-AGX_29-55-82.json')
     const fontData = await res.json()
-    const text = MeshBuilder.CreateText(
-      'userInput',
-      userInput,
-      fontData,
-      {
-        size: 2,
-        resolution: 64,
-        depth: 1,
-      },
-      scene,
-      earcut
-    )
 
-    if (!text) return
+    userInput.split(' ').forEach((word, i) => {
+      switch (word) {
+        case 'good':
+          console.log('good')
+          break
+        case 'sad':
+          console.log('sad')
+          break
+        case 'smile':
+          console.log('smile')
+          break
+        default:
+          break
+      }
 
-    // text animation
-    const textMaterial = new StandardMaterial('textMaterial', scene)
-    textMaterial.diffuseColor = new Color3(1, 1, 0)
-    textMaterial.alpha = 0
-    text.material = textMaterial
+      let x = 0
+      let y = 0
+      word.split('').forEach((letter, j) => {
+        const letterMesh = MeshBuilder.CreateText(
+          'letterMesh',
+          letter,
+          fontData,
+          {
+            size: 2,
+            resolution: 64,
+            depth: 1,
+          },
+          scene,
+          earcut,
+        )
 
-    const textAnimation = new Animation('easeIn', 'material.alpha', 30, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE)
+        if (!letterMesh) return
 
-    const keyframes = [
-      { frame: 0, value: text.material.alpha },
-      { frame: 120, value: 1 },
-    ]
-    textAnimation.setKeys(keyframes)
+        // 각 메쉬 위치 설정
+        letterMesh.position.x = x
+        letterMesh.position.y = y
+        x += 2 // letterMesh.getBoundingInfo().boundingBox
 
-    const easingFunction = new CircleEase()
-    easingFunction.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT)
-    textAnimation.setEasingFunction(easingFunction)
+        const letterMaterial = new StandardMaterial('letterMaterial', scene)
+        letterMaterial.diffuseColor = new Color3(1, 1, 0)
+        letterMesh.material = letterMaterial
 
-    text.animations.push(textAnimation)
-    scene.beginAnimation(text, 0, 120, true)
+        // 마지막 글자면
+        if ((i + 1) * (j + 1) === userInput.length) {
+          const letterAppearanceAnimation = new Animation(
+            'letterAppearanceAnimation',
+            'material.alpha',
+            30,
+            Animation.ANIMATIONTYPE_FLOAT,
+            Animation.ANIMATIONLOOPMODE_CYCLE,
+          )
+          const keyframes = [
+            { frame: 0, value: 0 },
+            { frame: 120, value: 1 },
+          ]
+          letterAppearanceAnimation.setKeys(keyframes)
+
+          const easingFunction = new CircleEase()
+          easingFunction.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT)
+          letterAppearanceAnimation.setEasingFunction(easingFunction)
+
+          letterMesh.animations.push(letterAppearanceAnimation)
+          scene.beginAnimation(letterMesh, 0, 120, true)
+        }
+      })
+    })
   }
 
   const onRender = useCallback((scene: Scene) => {
-    if (!box) return
-
-    const deltaTimeInMillis = scene.getEngine().getDeltaTime();
-
-    const rpm = 10;
-    box.rotation.y += (rpm / 60) * Math.PI * 2 * (deltaTimeInMillis / 1000);
-  }, [userInput, box])
+  }, [])
 
   return (
     <>
