@@ -61,9 +61,5 @@ export default function SceneComponent({
     }
   }, [antialias, engineOptions, adaptToDeviceRatio, sceneOptions, onRender, onSceneReady])
 
-  useEffect(() => {
-    console.log(userInput)
-  }, [userInput])
-
   return <canvas ref={reactCanvas} {...rest} />
 }
