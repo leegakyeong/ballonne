@@ -1,7 +1,26 @@
 import { useEffect, useRef } from 'react'
 import { Engine, Scene } from '@babylonjs/core'
+import { EngineOptions, SceneOptions } from '@/types/babylonTypes'
 
-export default function SceneComponent({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, onRender, onSceneReady, ...rest }) {
+type SceneComponentProps = {
+  antialias: boolean
+  engineOptions?: EngineOptions
+  adaptToDeviceRatio?: boolean
+  sceneOptions?: SceneOptions
+  onRender: (scene: Scene) => void
+  onSceneReady: (scene: Scene) => void
+  id: string
+}
+
+export default function SceneComponent({
+  antialias,
+  engineOptions,
+  adaptToDeviceRatio,
+  sceneOptions,
+  onRender,
+  onSceneReady,
+  ...rest
+}: SceneComponentProps) {
   const reactCanvas = useRef(null)
 
   // set up basic engine and scene

@@ -1,12 +1,12 @@
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder } from '@babylonjs/core'
+import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Mesh } from '@babylonjs/core'
 import { Input } from '@/components/ui/input'
 import SceneComponent from './components/3d/SceneComponent'
 import './App.css'
 
 function App() {
-  let box
+  let box: Mesh
 
-  const onSceneReady = (scene) => {
+  const onSceneReady = (scene: Scene) => {
     // This creates and positions a free camera (non-mesh)
     const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
 
@@ -37,7 +37,7 @@ function App() {
   /**
    * Will run on every frame render.  We are spinning the box on y-axis.
    */
-  const onRender = (scene) => {
+  const onRender = (scene: Scene) => {
     if (box !== undefined) {
       const deltaTimeInMillis = scene.getEngine().getDeltaTime();
 
