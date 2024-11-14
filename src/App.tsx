@@ -3,7 +3,6 @@ import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Mesh, Animat
 import earcut from 'earcut'
 import { Input } from '@/components/ui/input'
 import SceneComponent from './components/3d/SceneComponent'
-import { getDroopAnimation, getCurveAnimation, getLetterAppearanceAnimation } from './utils/animations'
 import './App.css'
 
 function App() {
@@ -26,9 +25,7 @@ function App() {
 
     const letterMaterial = new StandardMaterial('letterMaterial', scene)
 
-    const droopAnimation = getDroopAnimation()
-    const curveAnimation = await getCurveAnimation()
-    const letterAppearanceAnimation = getLetterAppearanceAnimation()
+    const curveAnimation = await Animation.CreateFromSnippetAsync('1NGH42#44')
 
     const words = userInput.split(' ')
     const letters = userInput.split('')
@@ -41,7 +38,7 @@ function App() {
         fontData,
         {
           size: 1,
-          resolution: 1,
+          resolution: 8,
           depth: 1,
         },
         scene,
@@ -65,10 +62,22 @@ function App() {
       } else if (words.includes('sad')) {
         letterMaterial.diffuseColor = new Color3(0, 0, 1)
 
+        const droopAnimation = new Animation(
+          'droopAnimation',
+          'position.y',
+          30,
+          Animation.ANIMATIONTYPE_FLOAT,
+          Animation.ANIMATIONLOOPMODE_CYCLE,
+        )
+
         droopAnimation.setKeys([
           { frame: 0, value: letterMesh.position.y },
           { frame: 60, value: letterMesh.position.y - Math.random() * 2 },
         ])
+
+        const easingFunction = new CircleEase()
+        easingFunction.setEasingMode(EasingFunction.EASINGMODE_EASEOUT)
+        droopAnimation.setEasingFunction(easingFunction)
 
         letterMesh.animations.push(droopAnimation)
         scene.beginAnimation(letterMesh, 0, 120, false)
@@ -86,6 +95,23 @@ function App() {
 
       // 마지막 글자 입력 애니메이션
       if (i + 1 === userInput.length) {
+        const letterAppearanceAnimation = new Animation(
+          'letterAppearanceAnimation',
+          'material.alpha',
+          30,
+          Animation.ANIMATIONTYPE_FLOAT,
+          Animation.ANIMATIONLOOPMODE_CYCLE,
+        )
+
+        letterAppearanceAnimation.setKeys([
+          { frame: 0, value: 0 },
+          { frame: 10, value: 1 },
+        ])
+
+        const easingFunction = new CircleEase()
+        easingFunction.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT)
+        letterAppearanceAnimation.setEasingFunction(easingFunction)
+
         letterMesh.animations.push(letterAppearanceAnimation)
         scene.beginAnimation(letterMesh, 0, 120, false)
       }
