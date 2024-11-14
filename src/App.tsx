@@ -23,10 +23,14 @@ function App() {
     const res = await fetch('/src/assets/Phase-AGX_29-55-82.json')
     const fontData = await res.json()
 
-    userInput.split(' ').forEach((word, i) => {
+    const letterMaterial = new StandardMaterial('letterMaterial', scene)
+
+    const words = userInput.split(' ')
+    words.forEach((word, i) => {
       switch (word) {
         case 'good': {
           console.log('good')
+          letterMaterial.emissiveColor = new Color3(1, 1, 1)
           const glow = new GlowLayer('glow', scene)
           glow.customEmissiveColorSelector = function (mesh, subMesh, material, result) {
             if (mesh.name === "letterMesh") {
@@ -37,9 +41,23 @@ function App() {
           }
           break
         }
-        case 'sad':
+        case 'sad': {
           console.log('sad')
+          letterMaterial.diffuseColor = new Color3(0, 0, 1)
+
+          // const droopAnimation = new Animation(
+          //   'droopAnimation',
+          //   'position.y',
+          //   30,
+          //   Animation.ANIMATIONTYPE_FLOAT,
+          //   Animation.ANIMATIONLOOPMODE_CYCLE,
+          // )
+          // droopAnimation.setKeys([
+          //   { frame: 0, value: letterMesh.position.y },
+          //   { frame: 60, value: letterMesh.position.y - Math.random * 2 },
+          // ])
           break
+        }
         case 'smile':
           console.log('smile')
           break
@@ -70,10 +88,31 @@ function App() {
         letterMesh.position.y = y
         x += 2 // letterMesh.getBoundingInfo().boundingBox
 
-        const letterMaterial = new StandardMaterial('letterMaterial', scene)
+        // const letterMaterial = new StandardMaterial('letterMaterial', scene)
         // letterMaterial.diffuseColor = new Color3(1, 1, 0)
-        letterMaterial.emissiveColor = new Color3(1, 0.5, 1)
+        // letterMaterial.emissiveColor = new Color3(1, 0.5, 1)
         letterMesh.material = letterMaterial
+
+        if (words.includes('sad')) {
+          const droopAnimation = new Animation(
+            'droopAnimation',
+            'position.y',
+            30,
+            Animation.ANIMATIONTYPE_FLOAT,
+            Animation.ANIMATIONLOOPMODE_CYCLE,
+          )
+          droopAnimation.setKeys([
+            { frame: 0, value: letterMesh.position.y },
+            { frame: 60, value: letterMesh.position.y - Math.random() * 2 },
+          ])
+
+          const easingFunction = new CircleEase()
+          easingFunction.setEasingMode(EasingFunction.EASINGMODE_EASEOUT)
+          droopAnimation.setEasingFunction(easingFunction)
+
+          letterMesh.animations.push(droopAnimation)
+          scene.beginAnimation(letterMesh, 0, 120, false)
+        }
 
         // 마지막 글자면
         if ((i + 1) * (j + 1) === userInput.length) {
