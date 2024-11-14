@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Mesh, Animation, CircleEase, EasingFunction, StandardMaterial, Color3, GlowLayer } from '@babylonjs/core'
+import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Mesh, Animation, CircleEase, EasingFunction, StandardMaterial, Color3, GlowLayer, ParticleHelper } from '@babylonjs/core'
 import earcut from 'earcut'
 import { Input } from '@/components/ui/input'
 import SceneComponent from './components/3d/SceneComponent'
@@ -24,6 +24,8 @@ function App() {
     const fontData = await res.json()
 
     const letterMaterial = new StandardMaterial('letterMaterial', scene)
+
+    const curveAnimation = await Animation.CreateFromSnippetAsync('1NGH42#44')
 
     const words = userInput.split(' ')
     words.forEach((word, i) => {
@@ -60,6 +62,7 @@ function App() {
         }
         case 'smile':
           console.log('smile')
+          ParticleHelper.CreateDefault(new Vector3(0, 0, 0)).start()
           break
         default:
           break
@@ -112,6 +115,12 @@ function App() {
 
           letterMesh.animations.push(droopAnimation)
           scene.beginAnimation(letterMesh, 0, 120, false)
+        }
+
+        if (words.includes('smile')) {
+          // const curveAnimation = await Animation.CreateFromSnippetAsync('/src/assets/curveAnimation.json')
+          letterMesh.animations = curveAnimation
+          scene.beginAnimation(letterMesh, 0, 100, false)
         }
 
         // 마지막 글자면
