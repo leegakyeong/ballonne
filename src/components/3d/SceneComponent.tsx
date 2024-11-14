@@ -61,5 +61,5 @@ export default function SceneComponent({
     }
   }, [antialias, engineOptions, adaptToDeviceRatio, sceneOptions, onRender, onSceneReady])
 
-  return <canvas ref={reactCanvas} {...rest} />
+  return <canvas ref={reactCanvas} {...rest} width={1000} height={700} />
 }
