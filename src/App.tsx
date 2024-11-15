@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Mesh, Animation, CircleEase, EasingFunction, StandardMaterial, Color3, GlowLayer, ParticleHelper } from '@babylonjs/core'
+import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Animation, CircleEase, EasingFunction, StandardMaterial, Color3, GlowLayer, ParticleHelper } from '@babylonjs/core'
 import earcut from 'earcut'
 import { Input } from '@/components/ui/input'
 import SceneComponent from './components/3d/SceneComponent'
@@ -7,6 +7,7 @@ import './App.css'
 
 function App() {
   const [userInput, setUserInput] = useState('')
+  const [prevUserInput, setPrevUserInput] = useState('')
 
   async function onSceneReady(scene: Scene) {
     const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
@@ -25,8 +26,8 @@ function App() {
 
     const curveAnimation = await Animation.CreateFromSnippetAsync('1NGH42#44')
 
-    const words = userInput.split(' ')
-    const letters = userInput.split('')
+    const words = userInput > prevUserInput ? userInput.split(' ') : prevUserInput.split(' ')
+    const letters = userInput > prevUserInput ? userInput.split('') : prevUserInput.split('')
     let x = 0
     let y = 0
     letters.forEach((letter, i) => {
@@ -93,7 +94,7 @@ function App() {
       x += 1
 
       // 마지막 글자 입력 애니메이션
-      if (i + 1 === userInput.length) {
+      if (i + 1 === (userInput > prevUserInput ? userInput.length : prevUserInput.length)) {
         const letterAppearanceAnimation = new Animation(
           'letterAppearanceAnimation',
           'material.alpha',
@@ -103,8 +104,8 @@ function App() {
         )
 
         letterAppearanceAnimation.setKeys([
-          { frame: 0, value: 0 },
-          { frame: 10, value: 1 },
+          { frame: 0, value: userInput > prevUserInput ? 0 : 1 },
+          { frame: 10, value: userInput > prevUserInput ? 1 : 0 },
         ])
 
         const easingFunction = new CircleEase()
@@ -123,7 +124,14 @@ function App() {
   return (
     <>
       <SceneComponent antialias onSceneReady={onSceneReady} onRender={onRender} id="my-canvas" userInput={userInput} />
-      <Input onChange={(e) => setUserInput(e.target.value)} />
+      <Input
+        onChange={(e) => {
+          setUserInput((prev) => {
+            setPrevUserInput(prev)
+            return e.target.value
+          })
+        }}
+      />
     </>
   )
 }
