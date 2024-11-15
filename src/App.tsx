@@ -91,7 +91,13 @@ function App() {
       // 글자 위치 설정
       letterMesh.position.x = x
       letterMesh.position.y = y
-      x += 1
+
+      letterMesh.showBoundingBox = true
+      const maximum = letterMesh.getBoundingInfo().boundingBox.maximum
+      const minimum = letterMesh.getBoundingInfo().boundingBox.minimum
+      const letterWidth = maximum.subtract(minimum).x
+
+      x += letterWidth
 
       // 마지막 글자 입력 애니메이션
       if (i + 1 === (userInput > prevUserInput ? userInput.length : prevUserInput.length)) {
