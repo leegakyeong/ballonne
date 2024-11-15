@@ -23,8 +23,6 @@ function App() {
     const res = await fetch('/src/assets/Phase-AGX_29-55-82.json')
     const fontData = await res.json()
 
-    const letterMaterial = new StandardMaterial('letterMaterial', scene)
-
     const curveAnimation = await Animation.CreateFromSnippetAsync('1NGH42#44')
 
     const words = userInput.split(' ')
@@ -47,7 +45,8 @@ function App() {
 
       if (!letterMesh) return
 
-      letterMesh.material = letterMaterial
+      const letterMaterial = new StandardMaterial('letterMaterial', scene)
+      letterMesh.material = letterMaterial;
 
       if (words.includes('good')) {
         letterMaterial.emissiveColor = new Color3(0, 0, 0)
