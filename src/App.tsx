@@ -1,13 +1,17 @@
 import { useState, useCallback } from 'react'
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Animation, CircleEase, EasingFunction, StandardMaterial, Color3, GlowLayer, ParticleHelper, PointLight } from '@babylonjs/core'
+import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Animation, CircleEase, EasingFunction, StandardMaterial, Color3, GlowLayer, ParticleHelper, PointLight, PBRMaterial } from '@babylonjs/core'
 import earcut from 'earcut'
 import { Input } from '@/components/ui/input'
+import { Button } from "@/components/ui/button"
 import SceneComponent from './components/3d/SceneComponent'
 import './App.css'
+
+type MaterialType = 'StandardMaterial' | 'PBRMaterial'
 
 function App() {
   const [userInput, setUserInput] = useState('')
   const [prevUserInput, setPrevUserInput] = useState('')
+  const [materialType, setMaterialType] = useState<MaterialType>('StandardMaterial')
 
   async function onSceneReady(scene: Scene) {
     const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
@@ -25,6 +29,19 @@ function App() {
     const fontData = await res.json()
 
     const curveAnimation = await Animation.CreateFromSnippetAsync('1NGH42#44')
+
+    let letterMaterial
+    switch (materialType) {
+      case 'StandardMaterial':
+        letterMaterial = new StandardMaterial('letterMaterial', scene)
+        break
+      case 'PBRMaterial':
+        letterMaterial = new PBRMaterial('letterMaterial', scene)
+        break
+      default:
+        letterMaterial = new StandardMaterial('letterMaterial', scene)
+        break
+    }
 
     const words = userInput > prevUserInput ? userInput.split(' ') : prevUserInput.split(' ')
     const letters = userInput > prevUserInput ? userInput.split('') : prevUserInput.split('')
@@ -57,9 +74,8 @@ function App() {
       }
 
       if (!letterMesh) return
-      console.log(letter, letterMesh.position.y)
 
-      const letterMaterial = new StandardMaterial('letterMaterial', scene)
+      // const letterMaterial = new StandardMaterial('letterMaterial', scene)
       letterMesh.material = letterMaterial;
 
       if (words.includes('good')) {
@@ -165,6 +181,10 @@ function App() {
           })
         }}
       />
+      <div>
+        <Button onClick={() => setMaterialType('StandardMaterial')}>Standard Material</Button>
+        <Button onClick={() => setMaterialType('PBRMaterial')}>PBR Material</Button>
+      </div>
     </>
   )
 }
