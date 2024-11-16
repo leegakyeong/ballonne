@@ -103,6 +103,8 @@ function App() {
       } else if (words.includes('smile')) {
         letterMesh.animations = curveAnimation as Animation[]
         scene.beginAnimation(letterMesh, 0, 100, false)
+
+        ParticleHelper.CreateDefault(new Vector3(0, 0.5, 0)).start()
       } else {
         letterMaterial.diffuseColor = new Color3(1, 0, 1)
       }
