@@ -89,15 +89,19 @@ function App() {
       }
 
       // 글자 위치 설정
-      letterMesh.position.x = x
-      letterMesh.position.y = y
-
-      letterMesh.showBoundingBox = true
+      // letterMesh.showBoundingBox = true
       const maximum = letterMesh.getBoundingInfo().boundingBox.maximum
       const minimum = letterMesh.getBoundingInfo().boundingBox.minimum
       const letterWidth = maximum.subtract(minimum).x
 
-      x += letterWidth
+      const letterSpacing = 0.1
+
+      x += letterWidth / 2 + letterSpacing
+
+      letterMesh.position.x = x
+      letterMesh.position.y = y
+
+      x += letterWidth / 2 + letterSpacing
 
       // 마지막 글자 입력 애니메이션
       if (i + 1 === (userInput > prevUserInput ? userInput.length : prevUserInput.length)) {
