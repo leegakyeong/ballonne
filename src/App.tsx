@@ -28,10 +28,11 @@ function App() {
 
     const words = userInput > prevUserInput ? userInput.split(' ') : prevUserInput.split(' ')
     const letters = userInput > prevUserInput ? userInput.split('') : prevUserInput.split('')
+    let letterMesh
     let x = 0
     let y = 0
     letters.forEach((letter, i) => {
-      const letterMesh = MeshBuilder.CreateText(
+      letterMesh = MeshBuilder.CreateText(
         'letterMesh',
         letter,
         fontData,
@@ -44,7 +45,19 @@ function App() {
         earcut,
       )
 
+      if (letter === ' ') {
+        letterMesh = MeshBuilder.CreateBox(
+          'spaceMesh',
+          {
+            width: 0.1,
+          },
+          scene
+        )
+        letterMesh.position.y = 0.5
+      }
+
       if (!letterMesh) return
+      console.log(letter, letterMesh.position.y)
 
       const letterMaterial = new StandardMaterial('letterMaterial', scene)
       letterMesh.material = letterMaterial;
@@ -94,6 +107,8 @@ function App() {
         letterMaterial.diffuseColor = new Color3(1, 0, 1)
       }
 
+      if (letter === ' ') letterMaterial.alpha = 0
+
       // 글자 위치 설정
       // letterMesh.showBoundingBox = true
       const maximum = letterMesh.getBoundingInfo().boundingBox.maximum
@@ -105,7 +120,7 @@ function App() {
       x += letterWidth / 2 + letterSpacing
 
       letterMesh.position.x = x
-      letterMesh.position.y = y
+      // letterMesh.position.y = y
 
       x += letterWidth / 2 + letterSpacing
 
