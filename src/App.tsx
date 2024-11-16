@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Animation, CircleEase, EasingFunction, StandardMaterial, Color3, GlowLayer, ParticleHelper } from '@babylonjs/core'
+import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Animation, CircleEase, EasingFunction, StandardMaterial, Color3, GlowLayer, ParticleHelper, PointLight } from '@babylonjs/core'
 import earcut from 'earcut'
 import { Input } from '@/components/ui/input'
 import SceneComponent from './components/3d/SceneComponent'
@@ -52,6 +52,7 @@ function App() {
       if (words.includes('good')) {
         letterMaterial.emissiveColor = new Color3(0, 0, 0)
         const glow = new GlowLayer('glow', scene)
+        glow.intensity = 0.2
         glow.customEmissiveColorSelector = function (mesh, _0, _1, result) {
           if (mesh.name === "letterMesh") {
             result.set(1, 1, 0, 1);
@@ -59,6 +60,11 @@ function App() {
             result.set(0, 0, 0, 0);
           }
         }
+
+        // light emission (근데 반사할 만한 곳이 필요할 듯..?)
+        const pointLight = new PointLight('pointLight', new Vector3(1, 1, 1), scene)
+        pointLight.diffuse = new Color3(1, 0, 0);
+	      pointLight.specular = new Color3(0, 1, 0);
       } else if (words.includes('sad')) {
         letterMaterial.diffuseColor = new Color3(0, 0, 1)
 
