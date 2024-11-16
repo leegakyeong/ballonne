@@ -1,9 +1,13 @@
 import { useState, useCallback } from 'react'
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Animation, CircleEase, EasingFunction, StandardMaterial, Color3, GlowLayer, ParticleHelper, PointLight, PBRMaterial } from '@babylonjs/core'
+import * as BABYLON from "@babylonjs/core"
+import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, Scene, Animation, CircleEase, EasingFunction, StandardMaterial, Color3, GlowLayer, ParticleHelper, PointLight, PBRMaterial, Mesh, Vector2, PolygonMeshBuilder, VertexBuffer } from '@babylonjs/core'
 import earcut from 'earcut'
+import opentype from 'opentype.js'
+import { Compiler, Font, TextMeshBuilder } from 'babylon.font'
 import { Input } from '@/components/ui/input'
 import { Button } from "@/components/ui/button"
 import SceneComponent from './components/3d/SceneComponent'
+import wasmUrl from "babylon.font/build/optimized.wasm?url";
 import './App.css'
 
 type MaterialType = 'StandardMaterial' | 'PBRMaterial'
@@ -43,24 +47,57 @@ function App() {
         break
     }
 
+    const compiler = await Compiler.Build(wasmUrl);
+    const font = await Font.Install("/src/assets/NotoSansKR-Regular.ttf", compiler, opentype);
+    const builder = new TextMeshBuilder(BABYLON, earcut)
+
     const words = userInput > prevUserInput ? userInput.split(' ') : prevUserInput.split(' ')
     const letters = userInput > prevUserInput ? userInput.split('') : prevUserInput.split('')
     let letterMesh
     let x = 0
     let y = 0
     letters.forEach((letter, i) => {
-      letterMesh = MeshBuilder.CreateText(
-        'letterMesh',
-        letter,
-        fontData,
+      const mesh: Mesh = builder.create(
         {
+          font,
+          text: letter,
           size: 1,
-          resolution: 8,
-          depth: 1,
-        },
+          ppc: 2,
+          eps: 0.001,
+          // plus `BABYLON.MeshBuilder.CreatePolygon` options
+          // depth,
+          // sideOrientation,
+          // faceColors,
+          // faceUV,
+          // backUVs,
+          // frontUVs,
+          // updatable,
+         },
         scene,
-        earcut,
       )
+      const positions = mesh.getVerticesData(VertexBuffer.PositionKind)
+      if (!positions) return
+      // paths도 닫아 줘야 하는데...
+      const polygonPath = []
+      for (let i = 0; i < positions.length; i += 3) {
+        polygonPath.push(new Vector3(positions[i], positions[i + 2], 0))
+      }
+      polygonPath.push(polygonPath[0]) // 폴리곤을 닫아야 함. 이 부분 고치기!
+      letterMesh = MeshBuilder.ExtrudeShape(
+        'letterMesh',
+        {
+          shape: polygonPath,
+          path: [new Vector3(0, 0, 0), new Vector3(0, 0, 1)],
+          closePath: true,
+          // closeShape: true,
+          // rotation: 0.5,
+          // cap: Mesh.CAP_ALL,
+          // sideOrientation: Mesh.DOUBLESIDE
+        },
+        scene
+      )
+      letterMesh.position = mesh.position
+      mesh.setEnabled(false)
 
       if (letter === ' ') {
         letterMesh = MeshBuilder.CreateBox(
