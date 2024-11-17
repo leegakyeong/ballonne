@@ -80,11 +80,10 @@ export default function SceneComponent({
       const words = text > prevText ? text.split(' ') : prevText.split(' ')
       const letters = text > prevText ? text.split('') : prevText.split('')
       const letterMeshes: BABYLON.Mesh[] = []
-      let letterMesh
       let x = 0
       let y = 0
       letters.forEach((letter, i) => {
-        const mesh: BABYLON.Mesh = builder.create(
+        const letterMesh2D: BABYLON.Mesh = builder.create(
           {
             font,
             text: letter,
@@ -102,7 +101,7 @@ export default function SceneComponent({
            },
           scene,
         )
-        const positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind)
+        const positions = letterMesh2D.getVerticesData(BABYLON.VertexBuffer.PositionKind)
         if (!positions) return
         // paths도 닫아 줘야 하는데...
         const polygonPath = []
@@ -111,9 +110,9 @@ export default function SceneComponent({
         }
         polygonPath.push(polygonPath[0]) // 폴리곤을 닫아야 함. 이 부분 고치기!
 
-        mesh.setEnabled(false)
+        letterMesh2D.setEnabled(false)
 
-        letterMesh = createBeveledExtrudedText(scene, polygonPath, {
+        const letterMesh = createBeveledExtrudedText(scene, polygonPath, {
           depth: 2,
           bevelSize: 0.2,
           bevelSegments: 5,
@@ -210,7 +209,7 @@ export default function SceneComponent({
           letterAppearanceAnimation.setEasingFunction(easingFunction)
 
           letterMesh.animations.push(letterAppearanceAnimation)
-          scene.beginAnimation(letterMesh, 0, 120, false)
+          scene.beginAnimation(letterMesh, 0, 120, false, 1, () => text < prevText && letterMesh.dispose())
         }
 
         letterMeshes.push(letterMesh)
