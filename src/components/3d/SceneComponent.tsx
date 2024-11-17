@@ -4,6 +4,7 @@ import { Compiler, Font, TextMeshBuilder } from 'babylon.font'
 import opentype from 'opentype.js'
 import earcut from 'earcut'
 import wasmUrl from 'babylon.font/build/optimized.wasm?url'
+import { createBeveledExtrudedText } from '@/utils/pathUtils'
 
 type SceneComponentProps = {
   antialias: boolean
@@ -76,19 +77,6 @@ export default function SceneComponent({
 
       const curveAnimation = await BABYLON.Animation.CreateFromSnippetAsync('1NGH42#44')
 
-      // let letterMaterial
-      // switch (materialType) {
-      //   case 'StandardMaterial':
-      //     letterMaterial = new StandardMaterial('letterMaterial', scene)
-      //     break
-      //   case 'PBRMaterial':
-      //     letterMaterial = new PBRMaterial('letterMaterial', scene)
-      //     break
-      //   default:
-      //     letterMaterial = new StandardMaterial('letterMaterial', scene)
-      //     break
-      // }
-
       const words = text > prevText ? text.split(' ') : prevText.split(' ')
       const letters = text > prevText ? text.split('') : prevText.split('')
       const letterMeshes: BABYLON.Mesh[] = []
@@ -122,80 +110,15 @@ export default function SceneComponent({
           polygonPath.push(new BABYLON.Vector3(positions[i], positions[i + 2], 0))
         }
         polygonPath.push(polygonPath[0]) // 폴리곤을 닫아야 함. 이 부분 고치기!
-        letterMesh = BABYLON.MeshBuilder.ExtrudeShape(
-          'letterMesh',
-          {
-            shape: polygonPath,
-            path: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 1)],
-            closePath: true,
-            // closeShape: true,
-            // rotation: 0.5,
-            // cap: Mesh.CAP_ALL,
-            // sideOrientation: Mesh.DOUBLESIDE
-          },
-          scene
-        )
-        letterMesh.position = mesh.position
-        // mesh.setEnabled(false)
 
-        // Bevel 생성 함수
-        function createBeveledPath(shape: BABYLON.Vector3[], depth: number, bevelSize: number, bevelSegments: number) {
-          const paths = [];
-          for (let i = 0; i <= bevelSegments; i++) {
-              const t = i / bevelSegments;
-              const scale = 1 - t * bevelSize; // 경로의 크기를 점진적으로 줄임
-              const z = t * depth; // Z 방향으로 깊이 이동
-              const scaledShape = shape.map(v => v.scale(scale).add(new BABYLON.Vector3(0, 0, z)));
-              paths.push(scaledShape);
-          }
-          // 마지막 depth 레벨 추가
-          const finalShape = shape.map(v => v.add(new BABYLON.Vector3(0, 0, depth)));
-          paths.push(finalShape);
-          return paths;
-        }
+        mesh.setEnabled(false)
 
-        // Bevel 경로 생성
-        const depth = 2; // Extrusion 깊이
-        const bevelSize = 0.2; // Bevel 크기
-        const bevelSegments = 5; // Bevel 부드러움 단계
-        const beveledPaths = createBeveledPath(polygonPath, depth, bevelSize, bevelSegments);
-
-        // const backBevelpaths = beveledPaths.map(p => p.add(new BABYLON.BABYLON.Vector3(0, 0, depth))); // Z 방향으로 이동
-
-        // Extrusion 생성
-        const bevelMesh = BABYLON.MeshBuilder.CreateRibbon(
-          "beveledExtrusion",
-          { pathArray: beveledPaths, closeArray: true, closePath: true, sideOrientation: BABYLON.Mesh.DOUBLESIDE },
-          scene
-        );
-
-        // 앞면 닫기
-        // const frontBuilder = new BABYLON.PolygonMeshBuilder("front", beveledPaths.map(p => new BABYLON.BABYLON.Vector3(p.x, p.y, p.z)), scene);
-        // const frontMesh = frontBuilder.build(false, 0.01);
-        const frontMesh = mesh
-        frontMesh.rotation.x = Math.PI / 2
-        // frontMesh.position.z += 5
-
-        // // 뒷면 닫기
-        // const backBuilder = new BABYLON.PolygonMeshBuilder("back", backBevelpaths.map(p => new BABYLON.BABYLON.Vector3(p.x, p.y, p.z)), scene);
-        // const backMesh = backBuilder.build(false, 0.01);
-
-        // // 뒷면을 회전 (정상 방향)
-        // backMesh.rotation.y = Math.PI;
-
-        // // 메쉬 병합
-        BABYLON.Mesh.MergeMeshes([bevelMesh, frontMesh], true, false, undefined, false, true);
-
-        if (letter === ' ') {
-          letterMesh = BABYLON.MeshBuilder.CreateBox(
-            'spaceMesh',
-            {
-              width: 0.1,
-            },
-            scene
-          )
-          letterMesh.position.y = 0.5
-        }
+        letterMesh = createBeveledExtrudedText(scene, polygonPath, {
+          depth: 2,
+          bevelSize: 0.2,
+          bevelSegments: 5,
+          rotation: Math.PI / 4, // 45도 회전
+        });
 
         if (!letterMesh) return
 
@@ -263,7 +186,7 @@ export default function SceneComponent({
 
         letterMesh.position.x = x
         // letterMesh.position.y = y
-        bevelMesh.position.x = x
+        // bevelMesh.position.x = x
 
         x += letterWidth / 2 + letterSpacing
 
