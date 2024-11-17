@@ -12,6 +12,7 @@
   "dependencies": {
     "@babylonjs/core": "^7.33.0",
     "@radix-ui/react-slot": "^1.1.0",
+    "@types/earcut": "^2.1.4",
     "babylon.font": "github:ycw/babylon.font",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
