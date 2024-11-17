@@ -11,12 +11,16 @@ type SceneComponentProps = {
   id: string
   text: string
   prevText: string
+  bevelOptions: { depth: number; segments: number; }
+  extrusionOptions: { depth: number; scale: number; rotation: number; }
 }
 
 export default function SceneComponent({
   antialias,
   text,
   prevText,
+  bevelOptions,
+  extrusionOptions,
   ...rest
 }: SceneComponentProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -113,10 +117,10 @@ export default function SceneComponent({
         letterMesh2D.setEnabled(false)
 
         const letterMesh = createBeveledExtrudedText(scene, polygonPath, {
-          depth: 2,
-          bevelSize: 0.2,
-          bevelSegments: 5,
-          rotation: Math.PI / 4, // 45도 회전
+          depth: extrusionOptions.depth,
+          bevelSize: bevelOptions.depth,
+          bevelSegments: bevelOptions.segments,
+          rotation: extrusionOptions.rotation, // 45도 회전
         });
 
         if (!letterMesh) return
@@ -221,7 +225,7 @@ export default function SceneComponent({
     if (sceneRef.current) {
       updateTextMesh(sceneRef.current, text);
     }
-  }, [text, prevText])
+  }, [text, prevText, bevelOptions, extrusionOptions])
 
-  return <canvas ref={canvasRef} {...rest} width={1000} height={700} />
+  return <canvas ref={canvasRef} {...rest} className="w-full flex-1" /> // 리사이징 했을 때 버그 해결해야 함
 }

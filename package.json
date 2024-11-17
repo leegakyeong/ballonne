@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@babylonjs/core": "^7.33.0",
+    "@radix-ui/react-navigation-menu": "^1.2.1",
+    "@radix-ui/react-slider": "^1.2.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@types/earcut": "^2.1.4",
     "babylon.font": "github:ycw/babylon.font",
