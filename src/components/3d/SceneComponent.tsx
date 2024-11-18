@@ -4,7 +4,6 @@ import { Compiler, Font, TextMeshBuilder } from 'babylon.font'
 import opentype from 'opentype.js'
 import earcut from 'earcut'
 import wasmUrl from 'babylon.font/build/optimized.wasm?url'
-import { createBeveledExtrudedText, createExtrudedShapeWithBevel } from '@/utils/pathUtils'
 
 type SceneComponentProps = {
   antialias: boolean
@@ -85,7 +84,7 @@ export default function SceneComponent({
       const letters = text > prevText ? text.split('') : prevText.split('')
       const letterMeshes: BABYLON.Mesh[] = []
       let x = 0
-      let y = 0
+      // let y = 0
       letters.forEach((letter, i) => {
         const letterMesh2D: BABYLON.Mesh = builder.create(
           {
@@ -115,15 +114,6 @@ export default function SceneComponent({
         // polygonPath.push(polygonPath[0]) // 폴리곤을 닫아야 함. 이 부분 고치기!
 
         letterMesh2D.setEnabled(false)
-
-        // const letterMesh = createBeveledExtrudedText(scene, polygonPath, {
-        //   depth: bevelOptions.depth,
-        //   bevelSize: extrusionOptions.scale,
-        //   bevelSegments: bevelOptions.segments,
-        //   rotation: extrusionOptions.rotation, // 45도 회전
-        // });
-
-        // const letterMesh = createExtrudedShapeWithBevel(scene, polygonPath, bevelOptions.depth, bevelOptions.segments)
 
         const letterMesh = BABYLON.ExtrudeShape('letterMesh', {
           shape: polygonPath,
