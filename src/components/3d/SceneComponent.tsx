@@ -4,6 +4,9 @@ import { Compiler, Font, TextMeshBuilder } from 'babylon.font'
 import opentype from 'opentype.js'
 import earcut from 'earcut'
 import wasmUrl from 'babylon.font/build/optimized.wasm?url'
+import { PbrMaterialOptions, StandardMaterialOptions } from '@/types/options'
+
+type MaterialType = 'StandardMaterial' | 'PBRMaterial' | 'CustomMaterial'
 
 type SceneComponentProps = {
   antialias: boolean
@@ -12,6 +15,9 @@ type SceneComponentProps = {
   prevText: string
   bevelOptions: { depth: number; segments: number; }
   extrusionOptions: { depth: number; scale: number; rotation: number; }
+  materialType: MaterialType
+  standardMaterialOptions: StandardMaterialOptions
+  pbrMaterialOptions: PbrMaterialOptions
 }
 
 export default function SceneComponent({
@@ -20,6 +26,8 @@ export default function SceneComponent({
   prevText,
   bevelOptions,
   extrusionOptions,
+  standardMaterialOptions,
+  pbrMaterialOptions,
   ...rest
 }: SceneComponentProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)

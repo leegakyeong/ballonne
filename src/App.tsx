@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
-import { NavigationMenu, NavigationMenuList, NavigationMenuItem } from '@/components/ui/navigation-menu'
+import * as BABYLON from '@babylonjs/core'
 import { Input } from '@/components/ui/input'
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SceneComponent from './components/3d/SceneComponent'
 import './App.css'
+
+type MaterialType = 'StandardMaterial' | 'PBRMaterial' | 'CustomMaterial'
 
 const defaultBevelOptions = {
   depth: 0.2,
@@ -18,11 +21,31 @@ const defaultExtrusionOptions = {
   rotation: 0 // Math.PI * extrusionOptions.rotation
 }
 
+const defaultStandardMaterialOptions = {
+  diffuseColor: new BABYLON.Color3(0, 0, 0),
+  specularColor: new BABYLON.Color3(0, 0, 0),
+  emissiveColor: new BABYLON.Color3(0, 0, 0),
+  ambientColor: new BABYLON.Color3(0, 0, 0),
+  alpha: 1,
+}
+
+const defaultPbrMaterialOptions = {
+  albedoColor: new BABYLON.Color3(0, 0, 0),
+  metallic: 0,
+  roughness: 0,
+  alpha: 1,
+  refraction: 0,
+  translucency: 0,
+}
+
 function App() {
   const [text, setUserInput] = useState('')
   const [prevText, setPrevUserInput] = useState('')
   const [bevelOptions, setBevelOptions] = useState(defaultBevelOptions)
   const [extrusionOptions, setExtrusionOptions] = useState(defaultExtrusionOptions)
+  const [materialType, setMaterialType] = useState<MaterialType>('StandardMaterial')
+  const [standardMaterialOptions, setStandartMaterialOptions] = useState(defaultStandardMaterialOptions)
+  const [pbrMaterialOptions, setPbrMaterialOptions] = useState(defaultPbrMaterialOptions)
 
   const handleExtrusionDepthChange = useDebouncedCallback((value) => {
     setExtrusionOptions((prev) => ({ ...prev, depth: value }));
@@ -91,7 +114,17 @@ function App() {
           </div>
         </div>
         <div className="w-full h-full flex flex-col">
-          <SceneComponent antialias id="my-canvas" text={text} prevText={prevText} bevelOptions={bevelOptions} extrusionOptions={extrusionOptions} />
+          <SceneComponent
+            antialias
+            id="my-canvas"
+            text={text}
+            prevText={prevText}
+            bevelOptions={bevelOptions}
+            extrusionOptions={extrusionOptions}
+            materialType={materialType}
+            standardMaterialOptions={standardMaterialOptions}
+            pbrMaterialOptions={pbrMaterialOptions}
+          />
           <Input
             onChange={(e) => {
               setUserInput((prev) => {
@@ -101,7 +134,40 @@ function App() {
             }}
           />
         </div>
-        <div className="w-60">sidebar2</div>
+        <div className="w-60">
+          <Tabs defaultValue="standard">
+            <TabsList>
+              <TabsTrigger value="standard">Standard</TabsTrigger>
+              <TabsTrigger value="pbr">PBR</TabsTrigger>
+              <TabsTrigger value="custom">Custom</TabsTrigger>
+            </TabsList>
+            <TabsContent value="standard">
+              StandardMaterial
+              <Button onClick={() => setMaterialType('StandardMaterial')}>Apply</Button>
+            </TabsContent>
+            <TabsContent value="pbr">
+              PBRMaterial
+              <div>
+                <div>
+                  <label htmlFor="metallic">matallic</label>
+                  <span>{pbrMaterialOptions.metallic}</span>
+                </div>
+                <Slider
+                  name="metallic"
+                  defaultValue={[defaultPbrMaterialOptions.metallic]}
+                  max={1}
+                  step={0.01}
+                  onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, metallic: value })}
+                />
+              </div>
+              <Button onClick={() => setMaterialType('PBRMaterial')}>Apply</Button>
+            </TabsContent>
+            <TabsContent value="custom">
+              CustomMaterial
+              <Button onClick={() => setMaterialType('CustomMaterial')}>Apply</Button>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </>
   )
