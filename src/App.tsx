@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useDebouncedCallback } from 'use-debounce'
 import { NavigationMenu, NavigationMenuList, NavigationMenuItem } from '@/components/ui/navigation-menu'
 import { Input } from '@/components/ui/input'
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,18 @@ function App() {
   const [prevText, setPrevUserInput] = useState('')
   const [bevelOptions, setBevelOptions] = useState(defaultBevelOptions)
   const [extrusionOptions, setExtrusionOptions] = useState(defaultExtrusionOptions)
+
+  const handleExtrusionDepthChange = useDebouncedCallback((value) => {
+    setExtrusionOptions((prev) => ({ ...prev, depth: value }));
+  }, 200);
+
+  const handleExtrusionScaleChange = useDebouncedCallback((value) => {
+    setExtrusionOptions((prev) => ({ ...prev, scale: value }));
+  }, 200);
+
+  const handleExtrusionRotationChange = useDebouncedCallback((value) => {
+    setExtrusionOptions((prev) => ({ ...prev, rotation: value }));
+  }, 200);
 
   return (
     <>
@@ -52,7 +65,7 @@ function App() {
               defaultValue={[defaultExtrusionOptions.depth]}
               max={100}
               step={1}
-              onValueChange={([value]) => setExtrusionOptions({ ...extrusionOptions, depth: value })}
+              onValueChange={([value]) => handleExtrusionDepthChange(value)}
             />
             <div>{extrusionOptions.depth}</div>
           </div>
@@ -62,7 +75,7 @@ function App() {
               defaultValue={[defaultExtrusionOptions.scale]}
               max={5}
               step={0.1}
-              onValueChange={([value]) => setExtrusionOptions({ ...extrusionOptions, scale: value })}
+              onValueChange={([value]) => handleExtrusionScaleChange(value)}
             />
             <div>{extrusionOptions.scale}</div>
           </div>
@@ -72,7 +85,7 @@ function App() {
               defaultValue={[defaultExtrusionOptions.rotation]}
               max={2}
               step={0.1}
-              onValueChange={([value]) => setExtrusionOptions({ ...extrusionOptions, rotation: value })}
+              onValueChange={([value]) => handleExtrusionRotationChange(value)}
             />
             <div>{`π × ${extrusionOptions.rotation} rad`}</div>
           </div>
