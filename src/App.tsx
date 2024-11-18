@@ -3,10 +3,10 @@ import { useDebouncedCallback } from 'use-debounce'
 import * as BABYLON from '@babylonjs/core'
 import { Input } from '@/components/ui/input'
 import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ColorPicker } from './components/ui/color-picker'
 import SceneComponent from './components/3d/SceneComponent'
+import SliderSection from './components/shared/SliderSection'
 import './App.css'
 
 type MaterialType = 'StandardMaterial' | 'PBRMaterial' | 'CustomMaterial'
@@ -64,7 +64,7 @@ function App() {
     <>
       <header className="w-full h-12 flex items-center shrink-0 px-6 font-bold border-b-2 border-solid border-gray-200">Ballonné</header>
       <div className="w-full h-full flex">
-        <div className="w-60">
+        <div className="min-w-64 p-6">
           {/* <div>
             <div>bevel depth</div>
             <Slider
@@ -83,36 +83,30 @@ function App() {
               onValueChange={([value]) => setBevelOptions({ ...bevelOptions, segments: value })}
             />
           </div> */}
-          <div>
-            <div>extrusion depth</div>
-            <Slider
-              defaultValue={[defaultExtrusionOptions.depth]}
-              max={100}
-              step={1}
-              onValueChange={([value]) => handleExtrusionDepthChange(value)}
-            />
-            <div>{extrusionOptions.depth}</div>
-          </div>
-          <div>
-            <div>extrusion scale</div>
-            <Slider
-              defaultValue={[defaultExtrusionOptions.scale]}
-              max={5}
-              step={0.1}
-              onValueChange={([value]) => handleExtrusionScaleChange(value)}
-            />
-            <div>{extrusionOptions.scale}</div>
-          </div>
-          <div>
-            <div>extrusion rotation</div>
-            <Slider
-              defaultValue={[defaultExtrusionOptions.rotation]}
-              max={2}
-              step={0.1}
-              onValueChange={([value]) => handleExtrusionRotationChange(value)}
-            />
-            <div>{`${extrusionOptions.rotation}${extrusionOptions.rotation ? 'π' : ''} rad`}</div>
-          </div>
+          <SliderSection
+            name="Extrusion Depth"
+            value={extrusionOptions.depth}
+            defaultValue={defaultExtrusionOptions.depth}
+            max={100}
+            step={1}
+            onValueChange={handleExtrusionDepthChange}
+          />
+          <SliderSection
+            name="Extrusion Scale"
+            value={extrusionOptions.scale}
+            defaultValue={defaultExtrusionOptions.scale}
+            max={5}
+            step={0.1}
+            onValueChange={handleExtrusionScaleChange}
+          />
+          <SliderSection
+            name="Extrusion Rotation"
+            value={`${extrusionOptions.rotation}${extrusionOptions.rotation ? 'π' : ''} rad`}
+            defaultValue={defaultExtrusionOptions.rotation}
+            max={5}
+            step={0.1}
+            onValueChange={handleExtrusionRotationChange}
+          />
         </div>
         <div className="w-full h-full flex flex-col">
           <SceneComponent
@@ -135,7 +129,7 @@ function App() {
             }}
           />
         </div>
-        <div className="w-60">
+        <div className="min-w-64 p-6">
           <Tabs defaultValue="standard">
             <TabsList>
               <TabsTrigger value="standard">Standard</TabsTrigger>
@@ -187,71 +181,46 @@ function App() {
                 />
                 <div>{pbrMaterialOptions.albedoColor.toHexString()}</div>
               </div>
-              <div>
-                <div>
-                  <label htmlFor="metallic">matallic</label>
-                  <span>{pbrMaterialOptions.metallic}</span>
-                </div>
-                <Slider
-                  name="metallic"
-                  defaultValue={[defaultPbrMaterialOptions.metallic]}
-                  max={1}
-                  step={0.01}
-                  onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, metallic: value })}
-                />
-              </div>
-              <div>
-                <div>
-                  <label htmlFor="roughness">roughness</label>
-                  <span>{pbrMaterialOptions.roughness}</span>
-                </div>
-                <Slider
-                  name="roughness"
-                  defaultValue={[defaultPbrMaterialOptions.roughness]}
-                  max={1}
-                  step={0.01}
-                  onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, roughness: value })}
-                />
-              </div>
-              <div>
-                <div>
-                  <label htmlFor="pbr-alpha">alpha</label>
-                  <span>{pbrMaterialOptions.alpha}</span>
-                </div>
-                <Slider
-                  name="pbr-alpha"
-                  defaultValue={[defaultPbrMaterialOptions.alpha]}
-                  max={1}
-                  step={0.01}
-                  onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, alpha: value })}
-                />
-              </div>
-              <div>
-                <div>
-                  <label htmlFor="refraction">refraction</label>
-                  <span>{pbrMaterialOptions.refraction}</span>
-                </div>
-                <Slider
-                  name="refraction"
-                  defaultValue={[defaultPbrMaterialOptions.refraction]}
-                  max={1}
-                  step={0.01}
-                  onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, refraction: value })}
-                />
-              </div>
-              <div>
-                <div>
-                  <label htmlFor="translucency">translucency</label>
-                  <span>{pbrMaterialOptions.translucency}</span>
-                </div>
-                <Slider
-                  name="translucenct"
-                  defaultValue={[defaultPbrMaterialOptions.translucency]}
-                  max={1}
-                  step={0.01}
-                  onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, translucency: value })}
-                />
-              </div>
+              <SliderSection
+                name="Metallic"
+                value={pbrMaterialOptions.metallic}
+                defaultValue={defaultPbrMaterialOptions.metallic}
+                max={1}
+                step={0.01}
+                onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, metallic: value })}
+              />
+              <SliderSection
+                name="Roughness"
+                value={pbrMaterialOptions.roughness}
+                defaultValue={defaultPbrMaterialOptions.roughness}
+                max={1}
+                step={0.01}
+                onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, roughness: value })}
+              />
+              <SliderSection
+                name="Alpha"
+                value={pbrMaterialOptions.alpha}
+                defaultValue={defaultPbrMaterialOptions.alpha}
+                max={1}
+                step={0.01}
+                onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, alpha: value })}
+              />
+              <SliderSection
+                name="Refraction"
+                value={pbrMaterialOptions.refraction}
+                defaultValue={defaultPbrMaterialOptions.refraction}
+                max={1}
+                step={0.01}
+                onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, refraction: value })}
+              />
+              <SliderSection
+                name="Translucency"
+                value={pbrMaterialOptions.translucency}
+                defaultValue={defaultPbrMaterialOptions.translucency}
+                max={1}
+                step={0.01}
+                onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, translucency: value })}
+              />
               <Button onClick={() => setMaterialType('PBRMaterial')}>Apply</Button>
             </TabsContent>
             <TabsContent value="custom">
