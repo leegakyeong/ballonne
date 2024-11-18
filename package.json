@@ -12,6 +12,7 @@
   "dependencies": {
     "@babylonjs/core": "^7.33.0",
     "@radix-ui/react-navigation-menu": "^1.2.1",
+    "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-slider": "^1.2.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.1",
@@ -24,6 +25,7 @@
     "meshwriter": "^1.3.2",
     "opentype.js": "^1.3.4",
     "react": "^18.3.1",
+    "react-colorful": "^5.6.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
