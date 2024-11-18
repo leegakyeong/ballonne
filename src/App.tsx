@@ -160,6 +160,58 @@ function App() {
                   onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, metallic: value })}
                 />
               </div>
+              <div>
+                <div>
+                  <label htmlFor="roughness">roughness</label>
+                  <span>{pbrMaterialOptions.roughness}</span>
+                </div>
+                <Slider
+                  name="roughness"
+                  defaultValue={[defaultPbrMaterialOptions.roughness]}
+                  max={1}
+                  step={0.01}
+                  onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, roughness: value })}
+                />
+              </div>
+              <div>
+                <div>
+                  <label htmlFor="pbr-alpha">alpha</label>
+                  <span>{pbrMaterialOptions.alpha}</span>
+                </div>
+                <Slider
+                  name="pbr-alpha"
+                  defaultValue={[defaultPbrMaterialOptions.alpha]}
+                  max={1}
+                  step={0.01}
+                  onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, alpha: value })}
+                />
+              </div>
+              <div>
+                <div>
+                  <label htmlFor="refraction">refraction</label>
+                  <span>{pbrMaterialOptions.refraction}</span>
+                </div>
+                <Slider
+                  name="refraction"
+                  defaultValue={[defaultPbrMaterialOptions.refraction]}
+                  max={1}
+                  step={0.01}
+                  onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, refraction: value })}
+                />
+              </div>
+              <div>
+                <div>
+                  <label htmlFor="translucency">translucency</label>
+                  <span>{pbrMaterialOptions.translucency}</span>
+                </div>
+                <Slider
+                  name="translucenct"
+                  defaultValue={[defaultPbrMaterialOptions.translucency]}
+                  max={1}
+                  step={0.01}
+                  onValueChange={([value]) => setPbrMaterialOptions({ ...pbrMaterialOptions, translucency: value })}
+                />
+              </div>
               <Button onClick={() => setMaterialType('PBRMaterial')}>Apply</Button>
             </TabsContent>
             <TabsContent value="custom">

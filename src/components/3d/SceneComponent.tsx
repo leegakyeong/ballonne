@@ -26,6 +26,7 @@ export default function SceneComponent({
   prevText,
   bevelOptions,
   extrusionOptions,
+  materialType,
   standardMaterialOptions,
   pbrMaterialOptions,
   ...rest
@@ -135,7 +136,39 @@ export default function SceneComponent({
 
         if (!letterMesh) return
 
-        const letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
+        // const letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
+        let letterMaterial
+        switch (materialType) {
+          case 'StandardMaterial': {
+            letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
+            break
+          }
+          case 'PBRMaterial': {
+            const { metallic, roughness, alpha, refraction, translucency } = pbrMaterialOptions
+
+            letterMaterial = new BABYLON.PBRMaterial('letterMaterial', scene)
+
+            letterMaterial.metallic = metallic
+            letterMaterial.roughness = roughness
+            letterMaterial.alpha = alpha
+
+            letterMaterial.subSurface.isRefractionEnabled = true
+            letterMaterial.subSurface.refractionIntensity = refraction
+
+            letterMaterial.subSurface.isTranslucencyEnabled = true
+            letterMaterial.subSurface.translucencyIntensity = translucency
+
+            break
+          }
+          case 'CustomMaterial': {
+            letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
+            break
+          }
+          default: {
+            letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
+            break
+          }
+        }
         letterMesh.material = letterMaterial;
 
         if (words.includes('good')) {
@@ -235,7 +268,7 @@ export default function SceneComponent({
     if (sceneRef.current) {
       updateTextMesh(sceneRef.current, text);
     }
-  }, [text, prevText, bevelOptions, extrusionOptions])
+  }, [text, prevText, bevelOptions, extrusionOptions, materialType, standardMaterialOptions, pbrMaterialOptions])
 
   return <canvas ref={canvasRef} {...rest} className="w-full flex-1" /> // 리사이징 했을 때 버그 해결해야 함
 }
