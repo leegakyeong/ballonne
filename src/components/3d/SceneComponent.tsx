@@ -95,12 +95,12 @@ export default function SceneComponent({
       let x = 0
       // let y = 0
       letters.forEach((letter, i) => {
-        const letterMesh2D: BABYLON.Mesh = builder.create(
+        const frontMesh: BABYLON.Mesh = builder.create(
           {
             font,
             text: letter,
-            size: 5,
-            ppc: 2,
+            size: 5 * extrusionOptions.scale,
+            ppc: 5,
             eps: 0.001,
             // plus `BABYLON.MeshBuilder.CreatePolygon` options
             // depth,
@@ -113,7 +113,7 @@ export default function SceneComponent({
            },
           scene,
         )
-        const positions = letterMesh2D.getVerticesData(BABYLON.VertexBuffer.PositionKind)
+        const positions = frontMesh.getVerticesData(BABYLON.VertexBuffer.PositionKind)
         if (!positions) return
         // paths도 닫아 줘야 하는데...
         const polygonPath = []
@@ -122,17 +122,21 @@ export default function SceneComponent({
         }
         // polygonPath.push(polygonPath[0]) // 폴리곤을 닫아야 함. 이 부분 고치기!
 
-        letterMesh2D.setEnabled(false)
+        // frontMesh.setEnabled(false)
+        frontMesh.rotate(new BABYLON.Vector3(1, 0, 0), -Math.PI / 2)
+        // frontMesh.translate(new BABYLON.Vector3(1, 0, 0), 1)
 
-        const letterMesh = BABYLON.ExtrudeShape('letterMesh', {
+        const sideMesh = BABYLON.ExtrudeShape('letterMesh', {
           shape: polygonPath,
           path: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, extrusionOptions.depth)],
-          scale: extrusionOptions.scale,
+          // scale: extrusionOptions.scale,
           rotation: Math.PI * extrusionOptions.rotation,
           closeShape: true,
           closePath: true,
           // cap: BABYLON.Mesh.CAP_ALL,
         })
+
+        const letterMesh = BABYLON.Mesh.MergeMeshes([frontMesh, sideMesh], true)
 
         if (!letterMesh) return
 
@@ -233,6 +237,7 @@ export default function SceneComponent({
         letterMesh.position.x = x
         // letterMesh.position.y = y
         // bevelMesh.position.x = x
+        frontMesh.position.x = x
 
         x += letterWidth / 2 + letterSpacing
 

@@ -110,7 +110,7 @@ function App() {
               step={0.1}
               onValueChange={([value]) => handleExtrusionRotationChange(value)}
             />
-            <div>{`π × ${extrusionOptions.rotation} rad`}</div>
+            <div>{`${extrusionOptions.rotation}${extrusionOptions.rotation ? 'π' : ''} rad`}</div>
           </div>
         </div>
         <div className="w-full h-full flex flex-col">
