@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ColorPicker } from './components/ui/color-picker'
 import SceneComponent from './components/3d/SceneComponent'
 import './App.css'
 
@@ -142,11 +143,50 @@ function App() {
               <TabsTrigger value="custom">Custom</TabsTrigger>
             </TabsList>
             <TabsContent value="standard">
-              StandardMaterial
+              <div>
+                <div>diffuseColor</div>
+                <ColorPicker
+                  value={standardMaterialOptions.diffuseColor.toHexString()}
+                  onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, diffuseColor: BABYLON.Color3.FromHexString(hex) })}
+                />
+                <div>{standardMaterialOptions.diffuseColor.toHexString()}</div>
+              </div>
+              <div>
+                <div>specularColor</div>
+                <ColorPicker
+                  value={standardMaterialOptions.specularColor.toHexString()}
+                  onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, specularColor: BABYLON.Color3.FromHexString(hex) })}
+                />
+                <div>{standardMaterialOptions.specularColor.toHexString()}</div>
+              </div>
+              <div>
+                <div>emissiveColor</div>
+                <ColorPicker
+                  value={standardMaterialOptions.emissiveColor.toHexString()}
+                  onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, emissiveColor: BABYLON.Color3.FromHexString(hex) })}
+                />
+                <div>{standardMaterialOptions.emissiveColor.toHexString()}</div>
+              </div>
+              <div>
+                <div>ambientColor</div>
+                <ColorPicker
+                  value={standardMaterialOptions.ambientColor.toHexString()}
+                  onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, ambientColor: BABYLON.Color3.FromHexString(hex) })}
+                />
+                <div>{standardMaterialOptions.ambientColor.toHexString()}</div>
+              </div>
               <Button onClick={() => setMaterialType('StandardMaterial')}>Apply</Button>
             </TabsContent>
             <TabsContent value="pbr">
               PBRMaterial
+              <div>
+                <div>albedoColor</div>
+                <ColorPicker
+                  value={pbrMaterialOptions.albedoColor.toHexString()}
+                  onChange={(hex) => setPbrMaterialOptions({ ...pbrMaterialOptions, albedoColor: BABYLON.Color3.FromHexString(hex) })}
+                />
+                <div>{pbrMaterialOptions.albedoColor.toHexString()}</div>
+              </div>
               <div>
                 <div>
                   <label htmlFor="metallic">matallic</label>

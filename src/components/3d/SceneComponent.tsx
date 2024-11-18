@@ -144,13 +144,23 @@ export default function SceneComponent({
         let letterMaterial
         switch (materialType) {
           case 'StandardMaterial': {
+            const { diffuseColor, specularColor, emissiveColor, ambientColor } = standardMaterialOptions
+
             letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
+
+            letterMaterial.diffuseColor = diffuseColor
+            letterMaterial.specularColor = specularColor
+            letterMaterial.emissiveColor = emissiveColor
+            letterMaterial.ambientColor = ambientColor
+
             break
           }
           case 'PBRMaterial': {
-            const { metallic, roughness, alpha, refraction, translucency } = pbrMaterialOptions
+            const { albedoColor, metallic, roughness, alpha, refraction, translucency } = pbrMaterialOptions
 
             letterMaterial = new BABYLON.PBRMaterial('letterMaterial', scene)
+
+            letterMaterial.albedoColor = albedoColor
 
             letterMaterial.metallic = metallic
             letterMaterial.roughness = roughness
@@ -192,7 +202,11 @@ export default function SceneComponent({
           pointLight.diffuse = new BABYLON.Color3(1, 0, 0);
           pointLight.specular = new BABYLON.Color3(0, 1, 0);
         } else if (words.includes('sad')) {
-          letterMaterial.diffuseColor = new BABYLON.Color3(0, 0, 1)
+          if (letterMaterial.diffuseColor) {
+            letterMaterial.diffuseColor = new BABYLON.Color3(0, 0, 1)
+          } else {
+            letterMaterial.albedoColor = new BABYLON.Color3(0, 0, 1)
+          }
 
           const droopAnimation = new BABYLON.Animation(
             'droopAnimation',
@@ -219,7 +233,7 @@ export default function SceneComponent({
 
           BABYLON.ParticleHelper.CreateDefault(new BABYLON.Vector3(0, 0.5, 0)).start()
         } else {
-          letterMaterial.diffuseColor = new BABYLON.Color3(1, 0, 1)
+          // letterMaterial.diffuseColor = new BABYLON.Color3(1, 0, 1)
         }
 
         if (letter === ' ') letterMaterial.alpha = 0
