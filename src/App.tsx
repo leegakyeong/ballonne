@@ -51,6 +51,8 @@ function App() {
   const [materialType, setMaterialType] = useState<MaterialType>('StandardMaterial')
   const [standardMaterialOptions, setStandartMaterialOptions] = useState(defaultStandardMaterialOptions)
   const [pbrMaterialOptions, setPbrMaterialOptions] = useState(defaultPbrMaterialOptions)
+  const [standardMaterialOptionsPreview, setStandartMaterialOptionsPreview] = useState(defaultStandardMaterialOptions)
+  const [pbrMaterialOptionsPreview, setPbrMaterialOptionsPreview] = useState(defaultPbrMaterialOptions)
 
   const handleBevelDepthChange = useDebouncedCallback((value) => {
     setBevelOptions((prev) => ({ ...prev, depth: value }))
@@ -162,86 +164,96 @@ function App() {
             <TabsContent value="standard">
               <MaterialPreview
                 materialType="StandardMaterial"
-                standardMaterialOptions={standardMaterialOptions}
-                pbrMaterialOptions={pbrMaterialOptions}
+                standardMaterialOptions={standardMaterialOptionsPreview}
+                pbrMaterialOptions={pbrMaterialOptionsPreview}
               />
               <ColorPickerSection
                 name="Diffuse Color"
-                value={standardMaterialOptions.diffuseColor}
-                onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, diffuseColor: BABYLON.Color3.FromHexString(hex) })}
+                value={standardMaterialOptionsPreview.diffuseColor}
+                onChange={(hex) => setStandartMaterialOptionsPreview({ ...standardMaterialOptionsPreview, diffuseColor: BABYLON.Color3.FromHexString(hex) })}
               />
               <ColorPickerSection
                 name="Specular Color"
-                value={standardMaterialOptions.specularColor}
-                onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, specularColor: BABYLON.Color3.FromHexString(hex) })}
+                value={standardMaterialOptionsPreview.specularColor}
+                onChange={(hex) => setStandartMaterialOptionsPreview({ ...standardMaterialOptionsPreview, specularColor: BABYLON.Color3.FromHexString(hex) })}
               />
               <ColorPickerSection
                 name="Emissive Color"
-                value={standardMaterialOptions.emissiveColor}
-                onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, emissiveColor: BABYLON.Color3.FromHexString(hex) })}
+                value={standardMaterialOptionsPreview.emissiveColor}
+                onChange={(hex) => setStandartMaterialOptionsPreview({ ...standardMaterialOptionsPreview, emissiveColor: BABYLON.Color3.FromHexString(hex) })}
               />
               <ColorPickerSection
                 name="Ambient Color"
-                value={standardMaterialOptions.ambientColor}
-                onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, ambientColor: BABYLON.Color3.FromHexString(hex) })}
+                value={standardMaterialOptionsPreview.ambientColor}
+                onChange={(hex) => setStandartMaterialOptionsPreview({ ...standardMaterialOptionsPreview, ambientColor: BABYLON.Color3.FromHexString(hex) })}
               />
               <div className="mt-6 flex justify-center">
-                <Button onClick={() => setMaterialType('StandardMaterial')}>Apply</Button>
+                <Button
+                  onClick={() => {
+                    setMaterialType('StandardMaterial')
+                    setStandartMaterialOptions(standardMaterialOptionsPreview)
+                  }}
+                >Apply</Button>
               </div>
             </TabsContent>
             <TabsContent value="pbr">
               <MaterialPreview
                 materialType="PBRMaterial"
-                standardMaterialOptions={standardMaterialOptions}
-                pbrMaterialOptions={pbrMaterialOptions}
+                standardMaterialOptions={standardMaterialOptionsPreview}
+                pbrMaterialOptions={pbrMaterialOptionsPreview}
               />
               <ColorPickerSection
                 name="Albedo Color"
-                value={pbrMaterialOptions.albedoColor}
-                onChange={(hex) => setPbrMaterialOptions({ ...pbrMaterialOptions, albedoColor: BABYLON.Color3.FromHexString(hex) })}
+                value={pbrMaterialOptionsPreview.albedoColor}
+                onChange={(hex) => setPbrMaterialOptionsPreview({ ...pbrMaterialOptionsPreview, albedoColor: BABYLON.Color3.FromHexString(hex) })}
               />
               <SliderSection
                 name="Metallic"
-                value={pbrMaterialOptions.metallic}
+                value={pbrMaterialOptionsPreview.metallic}
                 defaultValue={defaultPbrMaterialOptions.metallic}
                 max={1}
                 step={0.01}
-                onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, metallic: value })}
+                onValueChange={(value) => setPbrMaterialOptionsPreview({ ...pbrMaterialOptionsPreview, metallic: value })}
               />
               <SliderSection
                 name="Roughness"
-                value={pbrMaterialOptions.roughness}
+                value={pbrMaterialOptionsPreview.roughness}
                 defaultValue={defaultPbrMaterialOptions.roughness}
                 max={1}
                 step={0.01}
-                onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, roughness: value })}
+                onValueChange={(value) => setPbrMaterialOptionsPreview({ ...pbrMaterialOptionsPreview, roughness: value })}
               />
               <SliderSection
                 name="Alpha"
-                value={pbrMaterialOptions.alpha}
+                value={pbrMaterialOptionsPreview.alpha}
                 defaultValue={defaultPbrMaterialOptions.alpha}
                 max={1}
                 step={0.01}
-                onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, alpha: value })}
+                onValueChange={(value) => setPbrMaterialOptionsPreview({ ...pbrMaterialOptionsPreview, alpha: value })}
               />
               <SliderSection
                 name="Refraction"
-                value={pbrMaterialOptions.refraction}
+                value={pbrMaterialOptionsPreview.refraction}
                 defaultValue={defaultPbrMaterialOptions.refraction}
                 max={1}
                 step={0.01}
-                onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, refraction: value })}
+                onValueChange={(value) => setPbrMaterialOptionsPreview({ ...pbrMaterialOptionsPreview, refraction: value })}
               />
               <SliderSection
                 name="Translucency"
-                value={pbrMaterialOptions.translucency}
+                value={pbrMaterialOptionsPreview.translucency}
                 defaultValue={defaultPbrMaterialOptions.translucency}
                 max={1}
                 step={0.01}
-                onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, translucency: value })}
+                onValueChange={(value) => setPbrMaterialOptionsPreview({ ...pbrMaterialOptionsPreview, translucency: value })}
               />
               <div className="mt-7 flex justify-center">
-                <Button onClick={() => setMaterialType('PBRMaterial')}>Apply</Button>
+                <Button
+                  onClick={() => {
+                    setMaterialType('PBRMaterial')
+                    setPbrMaterialOptions(pbrMaterialOptionsPreview)
+                  }}
+                >Apply</Button>
               </div>
             </TabsContent>
             <TabsContent value="custom">
