@@ -6,6 +6,7 @@ import earcut from 'earcut'
 import wasmUrl from 'babylon.font/build/optimized.wasm?url'
 import { PbrMaterialOptions, StandardMaterialOptions } from '@/types/options'
 import { createBeveledPaths } from '@/utils/bevel'
+import NotoSansKR from '@/assets/NotoSansKR-Regular.ttf'
 
 type MaterialType = 'StandardMaterial' | 'PBRMaterial' | 'CustomMaterial'
 
@@ -240,7 +241,7 @@ export default function SceneComponent({
   useEffect(() => {
     async function updateTextMesh(scene: BABYLON.Scene, text: string) {
       const compiler = await Compiler.Build(wasmUrl);
-      const font = await Font.Install("/src/assets/NotoSansKR-Regular.ttf", compiler, opentype);
+      const font = await Font.Install(NotoSansKR, compiler, opentype);
       const builder = new TextMeshBuilder(BABYLON, earcut)
 
       // const curveAnimation = await BABYLON.Animation.CreateFromSnippetAsync('1NGH42#44')
@@ -281,6 +282,125 @@ export default function SceneComponent({
         //
       }
 
+      applyEffects(scene)
+
+      // const goodGlow = goodGlowRef.current
+      // if (!goodGlow) return
+
+      // const words = text.split(' ')
+      // goodGlow.isEnabled = false
+      // textMeshRef.current.forEach((letterMesh) => {
+      //   if (words.includes('good')) {
+      //     smileParticlesRef.current?.stop()
+
+      //     const goodMaterial = new BABYLON.StandardMaterial('goodMaterial')
+      //     goodMaterial.emissiveColor = new BABYLON.Color3(1, 1, 0)
+
+      //     goodGlow.isEnabled = true
+      //     goodGlow.intensity = 0.2
+      //     goodGlow.customEmissiveColorSelector = function (mesh, _0, _1, result) {
+      //       if (mesh.name === "letterMesh") {
+      //         result.set(1, 1, 0, 1);
+      //       } else {
+      //         result.set(0, 0, 0, 0);
+      //       }
+      //     }
+
+      //     // const pointLight = new BABYLON.PointLight('pointLight', new BABYLON.Vector3(1, 1, 1), scene)
+      //     // pointLight.diffuse = new BABYLON.Color3(1, 1, 0);
+      //     // pointLight.specular = new BABYLON.Color3(1, 1, 0);
+
+      //     letterMesh.material = goodMaterial
+      //   } else if (words.includes('sad')) {
+      //     goodGlow.isEnabled = false
+      //     smileParticlesRef.current?.stop()
+
+      //     const sadMaterial = new BABYLON.StandardMaterial('sadMaterial')
+      //     sadMaterial.diffuseColor = new BABYLON.Color3(0, 0, 1)
+
+      //     letterMesh.material = sadMaterial
+
+      //     const droopAnimation = new BABYLON.Animation(
+      //       'droopAnimation',
+      //       'position.y',
+      //       30,
+      //       BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+      //       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE,
+      //     )
+
+      //     droopAnimation.setKeys([
+      //       { frame: 0, value: letterMesh.position.y },
+      //       { frame: 60, value: letterMesh.position.y - Math.random() * 2 },
+      //     ])
+
+      //     const easingFunction = new BABYLON.CircleEase()
+      //     easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT)
+      //     droopAnimation.setEasingFunction(easingFunction)
+
+      //     letterMesh.animations.push(droopAnimation)
+      //     scene.beginAnimation(letterMesh, 0, 120, false)
+      //   } else if (words.includes('smile')) {
+      //     goodGlow.isEnabled = false
+
+      //     const curve = BABYLON.Curve3.ArcThru3Points(new BABYLON.Vector3(3, 0, 0), new BABYLON.Vector3(6, 0, 0), new BABYLON.Vector3(6, 3, 0))
+
+      //     const curveAnimation = new BABYLON.Animation(
+      //       'curveAnimation',
+      //       'position',
+      //       30,
+      //       BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      //       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+      //     )
+
+      //     const keys = []
+      //     for (let i = 0; i < curve.getPoints().length; i++) {
+      //       keys.push({
+      //         frame: i / 10, // 키프레임의 간격
+      //         value: letterMesh.position.add(curve.getPoints()[i])
+      //       })
+      //     }
+      //     curveAnimation.setKeys(keys)
+
+      //     const easingFunction = new BABYLON.CircleEase()
+      //     easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT)
+      //     curveAnimation.setEasingFunction(easingFunction)
+
+      //     letterMesh.animations.push(curveAnimation)
+      //     scene.beginAnimation(letterMesh, 0, 120, false)
+
+      //     // letterMesh.animations = curveAnimation as BABYLON.Animation[]
+      //     // scene.beginAnimation(letterMesh, 0, 100, false)
+
+      //     const smileParticles = smileParticlesRef.current
+
+      //     if (!smileParticles) return
+
+      //     smileParticles.particleTexture = new BABYLON.Texture('/src/assets/react.svg')
+      //     smileParticles.emitter = new BABYLON.Vector3(3, 0, 0)
+      //     smileParticles.createSphereEmitter(0.5)
+      //     smileParticles.color1 = new BABYLON.Color4(1, 0.5, 0, 1)
+      //     smileParticles.color2 = new BABYLON.Color4(1, 1, 0, 1)
+      //     smileParticles.colorDead = new BABYLON.Color4(1, 1, 1, 0);
+      //     smileParticles.minSize = 0.1;
+      //     smileParticles.maxSize = 0.4;
+      //     smileParticles.minLifeTime = 0.3;
+      //     smileParticles.maxLifeTime = 1.5;
+      //     smileParticles.minEmitPower = 5;
+      //     smileParticles.maxEmitPower = 10;
+      //     smileParticles.updateSpeed = 0.03;
+
+      //     smileParticles.start()
+      //   } else {
+      //     goodGlow.isEnabled = false
+      //     smileParticlesRef.current?.stop()
+      //     letterMesh.material = getCurrentMaterial(scene)
+      //   }
+
+      //   if (letterMesh && letterMesh.material && letterMesh.name === 'spaceMesh') letterMesh.material.alpha = 0
+      // })
+    }
+
+    function applyEffects(scene: BABYLON.Scene) {
       const goodGlow = goodGlowRef.current
       if (!goodGlow) return
 
@@ -359,7 +479,7 @@ export default function SceneComponent({
           curveAnimation.setKeys(keys)
 
           const easingFunction = new BABYLON.CircleEase()
-          easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT)
+          easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT)
           curveAnimation.setEasingFunction(easingFunction)
 
           letterMesh.animations.push(curveAnimation)
