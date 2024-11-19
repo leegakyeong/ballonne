@@ -241,6 +241,29 @@ export default function SceneComponent({
 
       const words = text > prevText ? text.split(' ') : prevText.split(' ')
 
+      if (text.length === textMeshRef.current.length) { // 텍스트가 아니라 edge나 material 관련 옵션이 업데이트됐을 때
+        textMeshRef.current.forEach((mesh) => mesh.dispose())
+        textMeshRef.current = []
+
+        const compiler = await Compiler.Build(wasmUrl);
+        const font = await Font.Install("/src/assets/NotoSansKR-Regular.ttf", compiler, opentype);
+        const builder = new TextMeshBuilder(BABYLON, earcut)
+
+        letterPosRef.current = { x: 0, y: 0 }
+        text.split('').forEach((letter) => {
+
+          const letterMesh = createLetterMesh(letter, font, builder, scene)
+
+          if (!letterMesh) return
+
+          positionLetterMesh(letter, letterMesh, scene)
+
+          textMeshRef.current.push(letterMesh)
+        })
+
+        return
+      }
+
       if (text > prevText) {
         const lastLetter = text[text.length - 1]
         const letterMesh = createLetterMesh(lastLetter, font, builder, scene)
