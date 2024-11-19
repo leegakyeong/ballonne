@@ -47,14 +47,16 @@ export default function SceneComponent({
     engineRef.current = engine
 
     const scene = new BABYLON.Scene(engine)
+    scene.clearColor = new BABYLON.Color4(1, 0.9, 0.95, 1)
+
     sceneRef.current = scene
 
     const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
-    camera.setTarget(BABYLON.Vector3.Zero());
+    camera.setTarget(new BABYLON.Vector3(3, 0, 0));
     camera.attachControl(canvas, true);
 
     const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-    light.intensity = 0.7;
+    light.intensity = 1;
 
     engine.runRenderLoop(() => {
       scene.render()
@@ -222,10 +224,10 @@ export default function SceneComponent({
           pointLight.diffuse = new BABYLON.Color3(1, 0, 0);
           pointLight.specular = new BABYLON.Color3(0, 1, 0);
         } else if (words.includes('sad')) {
-          if (letterMaterial.diffuseColor) {
-            letterMaterial.diffuseColor = new BABYLON.Color3(0, 0, 1)
-          } else {
-            letterMaterial.albedoColor = new BABYLON.Color3(0, 0, 1)
+          if (letterMaterial.getClassName() === 'StandardMaterial') {
+            (letterMaterial as BABYLON.StandardMaterial).diffuseColor = new BABYLON.Color3(0, 0, 1)
+          } else if (letterMaterial.getClassName() === 'PBRMaterial') {
+            (letterMaterial as BABYLON.PBRMaterial).albedoColor = new BABYLON.Color3(0, 0, 1)
           }
 
           const droopAnimation = new BABYLON.Animation(

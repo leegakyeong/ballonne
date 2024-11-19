@@ -23,10 +23,10 @@ const defaultExtrusionOptions = {
 }
 
 const defaultStandardMaterialOptions = {
-  diffuseColor: new BABYLON.Color3(0, 0, 0),
-  specularColor: new BABYLON.Color3(0, 0, 0),
+  diffuseColor: new BABYLON.Color3(1, 0.8, 0.9),
+  specularColor: new BABYLON.Color3(1, 0.8, 0.9),
   emissiveColor: new BABYLON.Color3(0, 0, 0),
-  ambientColor: new BABYLON.Color3(0, 0, 0),
+  ambientColor: new BABYLON.Color3(1, 0.8, 0.9),
   alpha: 1,
 }
 
@@ -39,9 +39,11 @@ const defaultPbrMaterialOptions = {
   translucency: 0,
 }
 
+const defaultText = 'Hello World'
+
 function App() {
-  const [text, setUserInput] = useState('')
-  const [prevText, setPrevUserInput] = useState('')
+  const [text, setUserInput] = useState(defaultText)
+  const [prevText, setPrevUserInput] = useState(defaultText.slice(0, -1))
   const [bevelOptions, setBevelOptions] = useState(defaultBevelOptions)
   const [extrusionOptions, setExtrusionOptions] = useState(defaultExtrusionOptions)
   const [materialType, setMaterialType] = useState<MaterialType>('StandardMaterial')
@@ -70,9 +72,11 @@ function App() {
 
   return (
     <>
-      <header className="w-full h-12 flex items-center shrink-0 px-6 font-bold border-b-2 border-solid border-gray-200">Ballonné</header>
+      <header className="w-full h-12 flex items-center shrink-0 px-6 font-bold border-b border-solid border-zinc-200">Ballonné</header>
       <div className="w-full h-full flex">
-        <div className="min-w-64 p-6">
+        <div className="min-w-64 px-6 py-4 text-left">
+          <div className="text-md font-semibold mb-4">Edges</div>
+          <div className="text-sm font-semibold mb-4">Bevel</div>
           <SliderSection
             name="Bevel Depth"
             value={bevelOptions.depth}
@@ -89,6 +93,7 @@ function App() {
             step={1}
             onValueChange={handleBevelSegmentsChange}
           />
+          <div className="text-sm font-semibold mt-6 mb-4">Extrusion</div>
           <SliderSection
             name="Extrusion Depth"
             value={extrusionOptions.depth}
@@ -128,6 +133,7 @@ function App() {
             pbrMaterialOptions={pbrMaterialOptions}
           />
           <Input
+            defaultValue={defaultText}
             onChange={(e) => {
               setUserInput((prev) => {
                 setPrevUserInput(prev)
@@ -136,12 +142,13 @@ function App() {
             }}
           />
         </div>
-        <div className="min-w-64 p-6">
+        <div className="min-w-64 px-6 py-4 text-left">
+          <div className="text-md font-semibold mb-4">Material</div>
           <Tabs defaultValue="standard">
-            <TabsList>
-              <TabsTrigger value="standard">Standard</TabsTrigger>
-              <TabsTrigger value="pbr">PBR</TabsTrigger>
-              <TabsTrigger value="custom">Custom</TabsTrigger>
+            <TabsList className="mb-3">
+              <TabsTrigger value="standard" className="bg-transparent text-xs">Standard</TabsTrigger>
+              <TabsTrigger value="pbr" className="bg-transparent text-xs">PBR</TabsTrigger>
+              <TabsTrigger value="custom" className="bg-transparent text-xs">Custom</TabsTrigger>
             </TabsList>
             <TabsContent value="standard">
               <ColorPickerSection
