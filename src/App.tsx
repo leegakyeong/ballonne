@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SceneComponent from './components/3d/SceneComponent'
 import SliderSection from './components/shared/SliderSection'
 import ColorPickerSection from './components/shared/ColorPickerSection'
+import githubMark from '@/assets/github-mark.svg'
 import './App.css'
 
 type MaterialType = 'StandardMaterial' | 'PBRMaterial' | 'CustomMaterial'
@@ -72,9 +73,14 @@ function App() {
 
   return (
     <>
-      <header className="w-full h-12 flex items-center shrink-0 px-6 font-bold border-b border-solid border-zinc-200">Ballonné</header>
+      <header className="w-full h-12 flex items-center justify-between shrink-0 px-6 font-bold border-b border-solid border-zinc-200">
+        <div>Ballonné</div>
+        <a href="https://github.com/leegakyeong/ballonne" target="_blank" rel="noopener noreferrer">
+          <img src={githubMark} width="24" height="24" />
+        </a>
+      </header>
       <div className="w-full h-full flex">
-        <div className="min-w-64 px-6 py-4 text-left">
+        <div className="min-w-64 px-6 py-4 text-left border-r border-solid border-zinc-200">
           <div className="text-md font-semibold mb-4">Edges</div>
           <div className="text-sm font-semibold mb-4">Bevel</div>
           <SliderSection
@@ -133,6 +139,7 @@ function App() {
             pbrMaterialOptions={pbrMaterialOptions}
           />
           <Input
+            className="h-20 rounded-none border-t border-solid border-zinc-200 focus:outline-none"
             defaultValue={defaultText}
             onChange={(e) => {
               setUserInput((prev) => {
@@ -142,7 +149,7 @@ function App() {
             }}
           />
         </div>
-        <div className="min-w-64 px-6 py-4 text-left">
+        <div className="min-w-64 px-6 py-4 text-left border-l border-solid border-zinc-200">
           <div className="text-md font-semibold mb-4">Material</div>
           <Tabs defaultValue="standard">
             <TabsList className="mb-3">
@@ -152,31 +159,30 @@ function App() {
             </TabsList>
             <TabsContent value="standard">
               <ColorPickerSection
-                name="DiffuseColor"
+                name="Diffuse Color"
                 value={standardMaterialOptions.diffuseColor}
                 onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, diffuseColor: BABYLON.Color3.FromHexString(hex) })}
               />
               <ColorPickerSection
-                name="SpecularColor"
+                name="Specular Color"
                 value={standardMaterialOptions.specularColor}
                 onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, specularColor: BABYLON.Color3.FromHexString(hex) })}
               />
               <ColorPickerSection
-                name="EmissiveColor"
+                name="Emissive Color"
                 value={standardMaterialOptions.emissiveColor}
                 onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, emissiveColor: BABYLON.Color3.FromHexString(hex) })}
               />
               <ColorPickerSection
-                name="AmbientColor"
+                name="Ambient Color"
                 value={standardMaterialOptions.ambientColor}
                 onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, ambientColor: BABYLON.Color3.FromHexString(hex) })}
               />
               <Button onClick={() => setMaterialType('StandardMaterial')}>Apply</Button>
             </TabsContent>
             <TabsContent value="pbr">
-              PBRMaterial
               <ColorPickerSection
-                name="AlbedoColor"
+                name="Albedo Color"
                 value={pbrMaterialOptions.albedoColor}
                 onChange={(hex) => setPbrMaterialOptions({ ...pbrMaterialOptions, albedoColor: BABYLON.Color3.FromHexString(hex) })}
               />
@@ -223,8 +229,6 @@ function App() {
               <Button onClick={() => setMaterialType('PBRMaterial')}>Apply</Button>
             </TabsContent>
             <TabsContent value="custom">
-              CustomMaterial
-              <Button onClick={() => setMaterialType('CustomMaterial')}>Apply</Button>
             </TabsContent>
           </Tabs>
         </div>
