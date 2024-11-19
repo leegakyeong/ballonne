@@ -37,6 +37,49 @@ export default function SceneComponent({
   const engineRef = useRef<BABYLON.Engine>()
   const textMeshRef = useRef<BABYLON.Mesh[]>([])
   const letterPosRef = useRef({ x: 0, y: 0 })
+  const goodGlowRef = useRef<BABYLON.GlowLayer>()
+
+  const getCurrentMaterial = useCallback((scene: BABYLON.Scene) => {
+    switch (materialType) {
+      case 'StandardMaterial': {
+        const { diffuseColor, specularColor, emissiveColor, ambientColor } = standardMaterialOptions
+
+        const letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
+
+        letterMaterial.diffuseColor = diffuseColor
+        letterMaterial.specularColor = specularColor
+        letterMaterial.emissiveColor = emissiveColor
+        letterMaterial.ambientColor = ambientColor
+
+        return letterMaterial
+      }
+      case 'PBRMaterial': {
+        const { albedoColor, metallic, roughness, alpha, refraction, translucency } = pbrMaterialOptions
+
+        const letterMaterial = new BABYLON.PBRMaterial('letterMaterial', scene)
+
+        letterMaterial.albedoColor = albedoColor
+
+        letterMaterial.metallic = metallic
+        letterMaterial.roughness = roughness
+        letterMaterial.alpha = alpha
+
+        letterMaterial.subSurface.isRefractionEnabled = true
+        letterMaterial.subSurface.refractionIntensity = refraction
+
+        letterMaterial.subSurface.isTranslucencyEnabled = true
+        letterMaterial.subSurface.translucencyIntensity = translucency
+
+        return letterMaterial
+      }
+      case 'CustomMaterial': {
+        return new BABYLON.StandardMaterial('letterMaterial', scene)
+      }
+      default: {
+        return new BABYLON.StandardMaterial('letterMaterial', scene)
+      }
+    }
+  }, [materialType, pbrMaterialOptions, standardMaterialOptions])
 
   const createLetterMesh = useCallback((letter: string, font: Font, builder: TextMeshBuilder, scene: BABYLON.Scene) => {
     const frontMesh: BABYLON.Mesh = builder.create(
@@ -85,7 +128,7 @@ export default function SceneComponent({
       scene
     );
 
-    const sideMesh = BABYLON.ExtrudeShape('letterMesh', {
+    const sideMesh = BABYLON.ExtrudeShape('sideMesh', {
       shape: polygonPath,
       path: [new BABYLON.Vector3(0, 0, bevelDepth), new BABYLON.Vector3(0, 0, extrusionOptions.depth - bevelDepth)],
       // scale: extrusionOptions.scale,
@@ -102,56 +145,15 @@ export default function SceneComponent({
     sideMesh.isEnabled(false)
 
     if (!letterMesh) return
+    letterMesh.name = letter === ' ' ? 'spaceMesh' : 'letterMesh'
 
-    // const letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
-    let letterMaterial
-    switch (materialType) {
-      case 'StandardMaterial': {
-        const { diffuseColor, specularColor, emissiveColor, ambientColor } = standardMaterialOptions
-
-        letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
-
-        letterMaterial.diffuseColor = diffuseColor
-        letterMaterial.specularColor = specularColor
-        letterMaterial.emissiveColor = emissiveColor
-        letterMaterial.ambientColor = ambientColor
-
-        break
-      }
-      case 'PBRMaterial': {
-        const { albedoColor, metallic, roughness, alpha, refraction, translucency } = pbrMaterialOptions
-
-        letterMaterial = new BABYLON.PBRMaterial('letterMaterial', scene)
-
-        letterMaterial.albedoColor = albedoColor
-
-        letterMaterial.metallic = metallic
-        letterMaterial.roughness = roughness
-        letterMaterial.alpha = alpha
-
-        letterMaterial.subSurface.isRefractionEnabled = true
-        letterMaterial.subSurface.refractionIntensity = refraction
-
-        letterMaterial.subSurface.isTranslucencyEnabled = true
-        letterMaterial.subSurface.translucencyIntensity = translucency
-
-        break
-      }
-      case 'CustomMaterial': {
-        letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
-        break
-      }
-      default: {
-        letterMaterial = new BABYLON.StandardMaterial('letterMaterial', scene)
-        break
-      }
-    }
+    const letterMaterial = getCurrentMaterial(scene)
     letterMesh.material = letterMaterial;
 
     if (letter === ' ') letterMaterial.alpha = 0
 
     return letterMesh
-  }, [bevelOptions, extrusionOptions, materialType, pbrMaterialOptions, standardMaterialOptions])
+  }, [bevelOptions, extrusionOptions, getCurrentMaterial])
 
   function positionLetterMesh(letter: string, letterMesh: BABYLON.Mesh, scene: BABYLON.Scene, isDelete=false) {
     const maximum = letterMesh.getBoundingInfo().boundingBox.maximum
@@ -210,6 +212,8 @@ export default function SceneComponent({
     const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
     light.intensity = 1;
 
+    goodGlowRef.current = new BABYLON.GlowLayer('goodGlow', scene)
+
     engine.runRenderLoop(() => {
       scene.render()
     })
@@ -238,8 +242,6 @@ export default function SceneComponent({
       const builder = new TextMeshBuilder(BABYLON, earcut)
 
       const curveAnimation = await BABYLON.Animation.CreateFromSnippetAsync('1NGH42#44')
-
-      const words = text > prevText ? text.split(' ') : prevText.split(' ')
 
       if (text.length === textMeshRef.current.length) { // 텍스트가 아니라 edge나 material 관련 옵션이 업데이트됐을 때
         textMeshRef.current.forEach((mesh) => mesh.dispose())
@@ -285,16 +287,19 @@ export default function SceneComponent({
         //
       }
 
+      const goodGlow = goodGlowRef.current
+      if (!goodGlow) return
+
+      const words = text.split(' ')
+      goodGlow.isEnabled = false
       textMeshRef.current.forEach((letterMesh) => {
-        const letterMaterial = letterMesh.material
-
-        if (!letterMaterial) return
-
         if (words.includes('good')) {
-          // letterMaterial.emissiveColor = new BABYLON.Color3(0, 0, 0)
-          const glow = new BABYLON.GlowLayer('glow', scene)
-          glow.intensity = 0.2
-          glow.customEmissiveColorSelector = function (mesh, _0, _1, result) {
+          const goodMaterial = new BABYLON.StandardMaterial('goodMaterial')
+          goodMaterial.emissiveColor = new BABYLON.Color3(1, 1, 0)
+
+          goodGlow.isEnabled = true
+          goodGlow.intensity = 0.2
+          goodGlow.customEmissiveColorSelector = function (mesh, _0, _1, result) {
             if (mesh.name === "letterMesh") {
               result.set(1, 1, 0, 1);
             } else {
@@ -302,16 +307,18 @@ export default function SceneComponent({
             }
           }
 
-          // light emission (근데 반사할 만한 곳이 필요할 듯..?)
-          const pointLight = new BABYLON.PointLight('pointLight', new BABYLON.Vector3(1, 1, 1), scene)
-          pointLight.diffuse = new BABYLON.Color3(1, 0, 0);
-          pointLight.specular = new BABYLON.Color3(0, 1, 0);
+          // const pointLight = new BABYLON.PointLight('pointLight', new BABYLON.Vector3(1, 1, 1), scene)
+          // pointLight.diffuse = new BABYLON.Color3(1, 1, 0);
+          // pointLight.specular = new BABYLON.Color3(1, 1, 0);
+
+          letterMesh.material = goodMaterial
         } else if (words.includes('sad')) {
-          if (letterMaterial.getClassName() === 'StandardMaterial') {
-            (letterMaterial as BABYLON.StandardMaterial).diffuseColor = new BABYLON.Color3(0, 0, 1)
-          } else if (letterMaterial.getClassName() === 'PBRMaterial') {
-            (letterMaterial as BABYLON.PBRMaterial).albedoColor = new BABYLON.Color3(0, 0, 1)
-          }
+          goodGlow.isEnabled = false
+
+          const sadMaterial = new BABYLON.StandardMaterial('sadMaterial')
+          sadMaterial.diffuseColor = new BABYLON.Color3(0, 0, 1)
+
+          letterMesh.material = sadMaterial
 
           const droopAnimation = new BABYLON.Animation(
             'droopAnimation',
@@ -333,20 +340,25 @@ export default function SceneComponent({
           letterMesh.animations.push(droopAnimation)
           scene.beginAnimation(letterMesh, 0, 120, false)
         } else if (words.includes('smile')) {
+          goodGlow.isEnabled = false
+
           letterMesh.animations = curveAnimation as BABYLON.Animation[]
           scene.beginAnimation(letterMesh, 0, 100, false)
 
           BABYLON.ParticleHelper.CreateDefault(new BABYLON.Vector3(0, 0.5, 0)).start()
         } else {
-          // letterMaterial.diffuseColor = new BABYLON.Color3(1, 0, 1)
+          goodGlow.isEnabled = false
+          letterMesh.material = getCurrentMaterial(scene)
         }
+
+        if (letterMesh && letterMesh.material && letterMesh.name === 'spaceMesh') letterMesh.material.alpha = 0
       })
     }
 
     if (sceneRef.current) {
       updateTextMesh(sceneRef.current, text);
     }
-  }, [text, prevText, materialType, createLetterMesh])
+  }, [text, prevText, materialType, createLetterMesh, getCurrentMaterial])
 
   return <canvas ref={canvasRef} {...rest} className="w-full flex-1" /> // 리사이징 했을 때 버그 해결해야 함
 }
