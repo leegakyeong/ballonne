@@ -13,15 +13,15 @@ export default function ColorPickerSection({
   onChange,
 }: ColorPickerSectionParams) {
   return (
-    <div className="mb-4">
-      <div className="mb-1 text-left">{name}</div>
+    <div className="mb-4 pl-0.5">
+      <div className="mb-3 text-left text-xs font-medium">{name}</div>
       <div className="flex items-center">
         <ColorPicker
           className="mr-2"
           value={value.toHexString()}
           onChange={onChange}
         />
-        <div>{value.toHexString()}</div>
+        <div className="text-xs text-zinc-500">{value.toHexString()}</div>
       </div>
     </div>
   )
