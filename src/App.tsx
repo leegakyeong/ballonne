@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SceneComponent from './components/3d/SceneComponent'
+import MaterialPreview from './components/3d/MaterialPreview'
 import SliderSection from './components/shared/SliderSection'
 import ColorPickerSection from './components/shared/ColorPickerSection'
 import githubMark from '@/assets/github-mark.svg'
@@ -24,7 +25,7 @@ const defaultExtrusionOptions = {
 }
 
 const defaultStandardMaterialOptions = {
-  diffuseColor: new BABYLON.Color3(1, 0.8, 0.9),
+  diffuseColor: new BABYLON.Color3(1, 0.4, 0.6),
   specularColor: new BABYLON.Color3(1, 0.8, 0.9),
   emissiveColor: new BABYLON.Color3(0.7, 0.2, 0.3),
   ambientColor: new BABYLON.Color3(1, 0.8, 0.9),
@@ -32,7 +33,7 @@ const defaultStandardMaterialOptions = {
 }
 
 const defaultPbrMaterialOptions = {
-  albedoColor: new BABYLON.Color3(0, 0, 0),
+  albedoColor: new BABYLON.Color3(0.2, 1, 0.5),
   metallic: 0,
   roughness: 0,
   alpha: 1,
@@ -139,7 +140,8 @@ function App() {
             pbrMaterialOptions={pbrMaterialOptions}
           />
           <Input
-            className="h-20 rounded-none border-t border-solid border-zinc-200 focus:outline-none"
+            className="h-20 rounded-none border-t border-solid border-zinc-200 focus:outline-none px-6"
+            placeholder="Type something"
             defaultValue={defaultText}
             onChange={(e) => {
               setUserInput((prev) => {
@@ -158,6 +160,11 @@ function App() {
               <TabsTrigger value="custom" className="bg-transparent text-xs">Custom</TabsTrigger>
             </TabsList>
             <TabsContent value="standard">
+              <MaterialPreview
+                materialType="StandardMaterial"
+                standardMaterialOptions={standardMaterialOptions}
+                pbrMaterialOptions={pbrMaterialOptions}
+              />
               <ColorPickerSection
                 name="Diffuse Color"
                 value={standardMaterialOptions.diffuseColor}
@@ -178,9 +185,16 @@ function App() {
                 value={standardMaterialOptions.ambientColor}
                 onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, ambientColor: BABYLON.Color3.FromHexString(hex) })}
               />
-              <Button onClick={() => setMaterialType('StandardMaterial')}>Apply</Button>
+              <div className="mt-6 flex justify-center">
+                <Button onClick={() => setMaterialType('StandardMaterial')}>Apply</Button>
+              </div>
             </TabsContent>
             <TabsContent value="pbr">
+              <MaterialPreview
+                materialType="PBRMaterial"
+                standardMaterialOptions={standardMaterialOptions}
+                pbrMaterialOptions={pbrMaterialOptions}
+              />
               <ColorPickerSection
                 name="Albedo Color"
                 value={pbrMaterialOptions.albedoColor}
@@ -226,7 +240,9 @@ function App() {
                 step={0.01}
                 onValueChange={(value) => setPbrMaterialOptions({ ...pbrMaterialOptions, translucency: value })}
               />
-              <Button onClick={() => setMaterialType('PBRMaterial')}>Apply</Button>
+              <div className="mt-7 flex justify-center">
+                <Button onClick={() => setMaterialType('PBRMaterial')}>Apply</Button>
+              </div>
             </TabsContent>
             <TabsContent value="custom">
             </TabsContent>
