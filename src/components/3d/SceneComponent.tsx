@@ -96,79 +96,19 @@ export default function SceneComponent({
 
         if (!letterMesh) return
 
-        const maximum = letterMesh.getBoundingInfo().boundingBox.maximum
-        const minimum = letterMesh.getBoundingInfo().boundingBox.minimum
-        const letterWidth = maximum.subtract(minimum).x
-
-        const letterSpacing = 0.1
-
-        letterPosRef.current.x += letterWidth / 2 + letterSpacing
-
-        letterMesh.position.x = letterPosRef.current.x
-        // letterMesh.position.y = y
-
-        letterPosRef.current.x += letterWidth / 2 + letterSpacing
-
-        const letterAppearanceAnimation = new BABYLON.Animation(
-          'letterAppearanceAnimation',
-          'material.alpha',
-          30,
-          BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE,
-        )
-
-        letterAppearanceAnimation.setKeys([
-          { frame: 0, value: 0 },
-          { frame: 10, value: 1 },
-        ])
-
-        const easingFunction = new BABYLON.CircleEase()
-        easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT)
-        letterAppearanceAnimation.setEasingFunction(easingFunction)
-
-        if (lastLetter !== ' ') letterMesh.animations.push(letterAppearanceAnimation)
-        scene.beginAnimation(letterMesh, 0, 120, false, 1)
+        positionLetter(lastLetter, letterMesh, scene)
 
         textMeshRef.current.push(letterMesh)
-      } else {
+      } else if (text < prevText) {
         const letterMesh = textMeshRef.current[textMeshRef.current.length - 1]
 
         if (!letterMesh) return
 
-        const letterAppearanceAnimation = new BABYLON.Animation(
-          'letterAppearanceAnimation',
-          'material.alpha',
-          30,
-          BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE,
-        )
-
-        letterAppearanceAnimation.setKeys([
-          { frame: 0, value: 1 },
-          { frame: 10, value: 0 },
-        ])
-
-        const easingFunction = new BABYLON.CircleEase()
-        easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT)
-        letterAppearanceAnimation.setEasingFunction(easingFunction)
-
-        if (prevText[prevText.length - 1] !== ' ') letterMesh.animations.push(letterAppearanceAnimation)
-        scene.beginAnimation(letterMesh, 0, 120, false, 1, () => letterMesh.dispose())
-
-        const maximum = letterMesh.getBoundingInfo().boundingBox.maximum
-        const minimum = letterMesh.getBoundingInfo().boundingBox.minimum
-        const letterWidth = maximum.subtract(minimum).x
-
-        const letterSpacing = 0.1
-
-        letterPosRef.current.x -= letterWidth / 2 + letterSpacing
-
-        letterMesh.position.x = letterPosRef.current.x
-        // letterMesh.position.y = y
-
-        letterPosRef.current.x -= letterWidth / 2 + letterSpacing
+        positionLetter(prevText[prevText.length - 1], letterMesh, scene, true)
 
         textMeshRef.current.pop()
+      } else {
+        //
       }
 
       textMeshRef.current.forEach((letterMesh) => {
@@ -342,6 +282,42 @@ export default function SceneComponent({
       if (letter === ' ') letterMaterial.alpha = 0
 
       return letterMesh
+    }
+
+    function positionLetter(letter: string, letterMesh: BABYLON.Mesh, scene: BABYLON.Scene, isDelete=false) {
+      const maximum = letterMesh.getBoundingInfo().boundingBox.maximum
+      const minimum = letterMesh.getBoundingInfo().boundingBox.minimum
+      const letterWidth = maximum.subtract(minimum).x
+
+      const letterSpacing = 0.1
+      const translationX = (letterWidth / 2 + letterSpacing) * (isDelete ? -1 : 1)
+
+      letterPosRef.current.x += translationX
+
+      letterMesh.position.x = letterPosRef.current.x
+      // letterMesh.position.y = y
+
+      letterPosRef.current.x += translationX
+
+      const letterAppearanceAnimation = new BABYLON.Animation(
+        'letterAppearanceAnimation',
+        'material.alpha',
+        30,
+        BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE,
+      )
+
+      letterAppearanceAnimation.setKeys([
+        { frame: 0, value: isDelete ? 1 : 0 },
+        { frame: 10, value: isDelete ? 0 : 1 },
+      ])
+
+      const easingFunction = new BABYLON.CircleEase()
+      easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT)
+      letterAppearanceAnimation.setEasingFunction(easingFunction)
+
+      if (letter !== ' ') letterMesh.animations.push(letterAppearanceAnimation)
+      scene.beginAnimation(letterMesh, 0, 120, false, 1, isDelete ? () => letterMesh.dispose() : undefined)
     }
 
     if (sceneRef.current) {
