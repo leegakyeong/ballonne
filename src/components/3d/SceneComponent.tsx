@@ -99,7 +99,7 @@ export default function SceneComponent({
         const frontMesh: BABYLON.Mesh = builder.create(
           {
             font,
-            text: letter,
+            text: letter === ' ' ? 'l' : letter,
             size: extrusionOptions.scale,
             ppc: 5,
             eps: 0.001,
@@ -292,7 +292,7 @@ export default function SceneComponent({
           easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT)
           letterAppearanceAnimation.setEasingFunction(easingFunction)
 
-          letterMesh.animations.push(letterAppearanceAnimation)
+          if (letter !== ' ') letterMesh.animations.push(letterAppearanceAnimation)
           scene.beginAnimation(letterMesh, 0, 120, false, 1, () => text < prevText && letterMesh.dispose())
         }
 
