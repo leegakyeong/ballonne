@@ -38,6 +38,7 @@ export default function SceneComponent({
   const textMeshRef = useRef<BABYLON.Mesh[]>([])
   const letterPosRef = useRef({ x: 0, y: 0 })
   const goodGlowRef = useRef<BABYLON.GlowLayer>()
+  const smileParticlesRef = useRef<BABYLON.ParticleSystem>()
 
   const getCurrentMaterial = useCallback((scene: BABYLON.Scene) => {
     switch (materialType) {
@@ -213,6 +214,7 @@ export default function SceneComponent({
     light.intensity = 1;
 
     goodGlowRef.current = new BABYLON.GlowLayer('goodGlow', scene)
+    smileParticlesRef.current = new BABYLON.ParticleSystem('smileParticles', 2000, scene) // new BABYLON.ParticleSystem('smileParticles', 500, scene)
 
     engine.runRenderLoop(() => {
       scene.render()
@@ -241,7 +243,7 @@ export default function SceneComponent({
       const font = await Font.Install("/src/assets/NotoSansKR-Regular.ttf", compiler, opentype);
       const builder = new TextMeshBuilder(BABYLON, earcut)
 
-      const curveAnimation = await BABYLON.Animation.CreateFromSnippetAsync('1NGH42#44')
+      // const curveAnimation = await BABYLON.Animation.CreateFromSnippetAsync('1NGH42#44')
 
       if (text.length === textMeshRef.current.length) { // 텍스트가 아니라 edge나 material 관련 옵션이 업데이트됐을 때
         textMeshRef.current.forEach((mesh) => mesh.dispose())
@@ -286,6 +288,8 @@ export default function SceneComponent({
       goodGlow.isEnabled = false
       textMeshRef.current.forEach((letterMesh) => {
         if (words.includes('good')) {
+          smileParticlesRef.current?.stop()
+
           const goodMaterial = new BABYLON.StandardMaterial('goodMaterial')
           goodMaterial.emissiveColor = new BABYLON.Color3(1, 1, 0)
 
@@ -306,6 +310,7 @@ export default function SceneComponent({
           letterMesh.material = goodMaterial
         } else if (words.includes('sad')) {
           goodGlow.isEnabled = false
+          smileParticlesRef.current?.stop()
 
           const sadMaterial = new BABYLON.StandardMaterial('sadMaterial')
           sadMaterial.diffuseColor = new BABYLON.Color3(0, 0, 1)
@@ -334,12 +339,57 @@ export default function SceneComponent({
         } else if (words.includes('smile')) {
           goodGlow.isEnabled = false
 
-          letterMesh.animations = curveAnimation as BABYLON.Animation[]
-          scene.beginAnimation(letterMesh, 0, 100, false)
+          const curve = BABYLON.Curve3.ArcThru3Points(new BABYLON.Vector3(3, 0, 0), new BABYLON.Vector3(6, 0, 0), new BABYLON.Vector3(6, 3, 0))
 
-          BABYLON.ParticleHelper.CreateDefault(new BABYLON.Vector3(0, 0.5, 0)).start()
+          const curveAnimation = new BABYLON.Animation(
+            'curveAnimation',
+            'position',
+            30,
+            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+          )
+
+          const keys = []
+          for (let i = 0; i < curve.getPoints().length; i++) {
+            keys.push({
+              frame: i / 10, // 키프레임의 간격
+              value: letterMesh.position.add(curve.getPoints()[i])
+            })
+          }
+          curveAnimation.setKeys(keys)
+
+          const easingFunction = new BABYLON.CircleEase()
+          easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT)
+          curveAnimation.setEasingFunction(easingFunction)
+
+          letterMesh.animations.push(curveAnimation)
+          scene.beginAnimation(letterMesh, 0, 120, false)
+
+          // letterMesh.animations = curveAnimation as BABYLON.Animation[]
+          // scene.beginAnimation(letterMesh, 0, 100, false)
+
+          const smileParticles = smileParticlesRef.current
+
+          if (!smileParticles) return
+
+          smileParticles.particleTexture = new BABYLON.Texture('/src/assets/react.svg')
+          smileParticles.emitter = new BABYLON.Vector3(3, 0, 0)
+          smileParticles.createSphereEmitter(0.5)
+          smileParticles.color1 = new BABYLON.Color4(1, 0.5, 0, 1)
+          smileParticles.color2 = new BABYLON.Color4(1, 1, 0, 1)
+          smileParticles.colorDead = new BABYLON.Color4(1, 1, 1, 0);
+          smileParticles.minSize = 0.1;
+          smileParticles.maxSize = 0.4;
+          smileParticles.minLifeTime = 0.3;
+          smileParticles.maxLifeTime = 1.5;
+          smileParticles.minEmitPower = 5;
+          smileParticles.maxEmitPower = 10;
+          smileParticles.updateSpeed = 0.03;
+
+          smileParticles.start()
         } else {
           goodGlow.isEnabled = false
+          smileParticlesRef.current?.stop()
           letterMesh.material = getCurrentMaterial(scene)
         }
 
