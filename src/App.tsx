@@ -39,7 +39,7 @@ const defaultPbrMaterialOptions = {
   translucency: 0,
 }
 
-const defaultText = 'Hello World'
+const defaultText = ''
 
 function App() {
   const [text, setUserInput] = useState(defaultText)
