@@ -4,9 +4,9 @@ import * as BABYLON from '@babylonjs/core'
 import { Input } from '@/components/ui/input'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ColorPicker } from './components/ui/color-picker'
 import SceneComponent from './components/3d/SceneComponent'
 import SliderSection from './components/shared/SliderSection'
+import ColorPickerSection from './components/shared/ColorPickerSection'
 import './App.css'
 
 type MaterialType = 'StandardMaterial' | 'PBRMaterial' | 'CustomMaterial'
@@ -144,53 +144,35 @@ function App() {
               <TabsTrigger value="custom">Custom</TabsTrigger>
             </TabsList>
             <TabsContent value="standard">
-              <div>
-                <div>diffuseColor</div>
-                <ColorPicker
-                  value={standardMaterialOptions.diffuseColor.toHexString()}
-                  onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, diffuseColor: BABYLON.Color3.FromHexString(hex) })}
-                />
-                <div>{standardMaterialOptions.diffuseColor.toHexString()}</div>
-              </div>
-              <div>
-                <div>specularColor</div>
-                <ColorPicker
-                  value={standardMaterialOptions.specularColor.toHexString()}
-                  onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, specularColor: BABYLON.Color3.FromHexString(hex) })}
-                />
-                <div>{standardMaterialOptions.specularColor.toHexString()}</div>
-              </div>
-              <div>
-                <div>emissiveColor</div>
-                <ColorPicker
-                  value={standardMaterialOptions.emissiveColor.toHexString()}
-                  onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, emissiveColor: BABYLON.Color3.FromHexString(hex) })}
-                />
-                <div>{standardMaterialOptions.emissiveColor.toHexString()}</div>
-              </div>
-              <div>
-                <div>ambientColor</div>
-                <ColorPicker
-                  value={standardMaterialOptions.ambientColor.toHexString()}
-                  onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, ambientColor: BABYLON.Color3.FromHexString(hex) })}
-                />
-                <div>{standardMaterialOptions.ambientColor.toHexString()}</div>
-              </div>
+              <ColorPickerSection
+                name="DiffuseColor"
+                value={standardMaterialOptions.diffuseColor}
+                onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, diffuseColor: BABYLON.Color3.FromHexString(hex) })}
+              />
+              <ColorPickerSection
+                name="SpecularColor"
+                value={standardMaterialOptions.specularColor}
+                onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, specularColor: BABYLON.Color3.FromHexString(hex) })}
+              />
+              <ColorPickerSection
+                name="EmissiveColor"
+                value={standardMaterialOptions.emissiveColor}
+                onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, emissiveColor: BABYLON.Color3.FromHexString(hex) })}
+              />
+              <ColorPickerSection
+                name="AmbientColor"
+                value={standardMaterialOptions.ambientColor}
+                onChange={(hex) => setStandartMaterialOptions({ ...standardMaterialOptions, ambientColor: BABYLON.Color3.FromHexString(hex) })}
+              />
               <Button onClick={() => setMaterialType('StandardMaterial')}>Apply</Button>
             </TabsContent>
             <TabsContent value="pbr">
               PBRMaterial
-              <div className="mb-4">
-                <div className="mb-1 text-left">albedoColor</div>
-                <div className="flex items-center">
-                  <ColorPicker
-                    className="mr-2"
-                    value={pbrMaterialOptions.albedoColor.toHexString()}
-                    onChange={(hex) => setPbrMaterialOptions({ ...pbrMaterialOptions, albedoColor: BABYLON.Color3.FromHexString(hex) })}
-                  />
-                  <div>{pbrMaterialOptions.albedoColor.toHexString()}</div>
-                </div>
-              </div>
+              <ColorPickerSection
+                name="AlbedoColor"
+                value={pbrMaterialOptions.albedoColor}
+                onChange={(hex) => setPbrMaterialOptions({ ...pbrMaterialOptions, albedoColor: BABYLON.Color3.FromHexString(hex) })}
+              />
               <SliderSection
                 name="Metallic"
                 value={pbrMaterialOptions.metallic}
