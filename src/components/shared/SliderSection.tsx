@@ -5,6 +5,7 @@ type SliderSectionProps = {
   value: number | string
   defaultValue: number
   max: number
+  min?: number
   step: number
   onValueChange: (v: number) => void
 }
@@ -14,6 +15,7 @@ export default function SliderSection({
   value,
   defaultValue,
   max,
+  min,
   step,
   onValueChange,
 }: SliderSectionProps) {
@@ -27,6 +29,7 @@ export default function SliderSection({
         name={name}
         defaultValue={[defaultValue]}
         max={max}
+        min={min ?? 0}
         step={step}
         onValueChange={([v]) => onValueChange(v)}
       />

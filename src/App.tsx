@@ -48,6 +48,14 @@ function App() {
   const [standardMaterialOptions, setStandartMaterialOptions] = useState(defaultStandardMaterialOptions)
   const [pbrMaterialOptions, setPbrMaterialOptions] = useState(defaultPbrMaterialOptions)
 
+  const handleBevelDepthChange = useDebouncedCallback((value) => {
+    setBevelOptions((prev) => ({ ...prev, depth: value }))
+  }, 200)
+
+  const handleBevelSegmentsChange = useDebouncedCallback((value) => {
+    setBevelOptions((prev) => ({ ...prev, segments: value }))
+  }, 200)
+
   const handleExtrusionDepthChange = useDebouncedCallback((value) => {
     setExtrusionOptions((prev) => ({ ...prev, depth: value }));
   }, 200);
@@ -65,30 +73,29 @@ function App() {
       <header className="w-full h-12 flex items-center shrink-0 px-6 font-bold border-b-2 border-solid border-gray-200">Ballonné</header>
       <div className="w-full h-full flex">
         <div className="min-w-64 p-6">
-          {/* <div>
-            <div>bevel depth</div>
-            <Slider
-              defaultValue={[defaultBevelOptions.depth]}
-              max={10}
-              step={0.1}
-              onValueChange={([value]) => setBevelOptions({ ...bevelOptions, depth: value })}
-            />
-          </div>
-          <div>
-            <div>bevel segments</div>
-            <Slider
-              defaultValue={[defaultBevelOptions.segments]}
-              max={100}
-              step={1}
-              onValueChange={([value]) => setBevelOptions({ ...bevelOptions, segments: value })}
-            />
-          </div> */}
+          <SliderSection
+            name="Bevel Depth"
+            value={bevelOptions.depth}
+            defaultValue={defaultBevelOptions.depth}
+            max={1}
+            step={0.1}
+            onValueChange={handleBevelDepthChange}
+          />
+          <SliderSection
+            name="Bevel Segments"
+            value={bevelOptions.segments}
+            defaultValue={defaultBevelOptions.segments}
+            max={100}
+            step={1}
+            onValueChange={handleBevelSegmentsChange}
+          />
           <SliderSection
             name="Extrusion Depth"
             value={extrusionOptions.depth}
             defaultValue={defaultExtrusionOptions.depth}
-            max={100}
-            step={1}
+            max={10}
+            min={1}
+            step={0.1}
             onValueChange={handleExtrusionDepthChange}
           />
           <SliderSection
@@ -173,13 +180,16 @@ function App() {
             </TabsContent>
             <TabsContent value="pbr">
               PBRMaterial
-              <div>
-                <div>albedoColor</div>
-                <ColorPicker
-                  value={pbrMaterialOptions.albedoColor.toHexString()}
-                  onChange={(hex) => setPbrMaterialOptions({ ...pbrMaterialOptions, albedoColor: BABYLON.Color3.FromHexString(hex) })}
-                />
-                <div>{pbrMaterialOptions.albedoColor.toHexString()}</div>
+              <div className="mb-4">
+                <div className="mb-1 text-left">albedoColor</div>
+                <div className="flex items-center">
+                  <ColorPicker
+                    className="mr-2"
+                    value={pbrMaterialOptions.albedoColor.toHexString()}
+                    onChange={(hex) => setPbrMaterialOptions({ ...pbrMaterialOptions, albedoColor: BABYLON.Color3.FromHexString(hex) })}
+                  />
+                  <div>{pbrMaterialOptions.albedoColor.toHexString()}</div>
+                </div>
               </div>
               <SliderSection
                 name="Metallic"

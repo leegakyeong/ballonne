@@ -5,6 +5,7 @@ import opentype from 'opentype.js'
 import earcut from 'earcut'
 import wasmUrl from 'babylon.font/build/optimized.wasm?url'
 import { PbrMaterialOptions, StandardMaterialOptions } from '@/types/options'
+import { createBeveledPaths } from '@/utils/bevel'
 
 type MaterialType = 'StandardMaterial' | 'PBRMaterial' | 'CustomMaterial'
 
@@ -99,7 +100,7 @@ export default function SceneComponent({
           {
             font,
             text: letter,
-            size: 5 * extrusionOptions.scale,
+            size: extrusionOptions.scale,
             ppc: 5,
             eps: 0.001,
             // plus `BABYLON.MeshBuilder.CreatePolygon` options
@@ -126,17 +127,36 @@ export default function SceneComponent({
         frontMesh.rotate(new BABYLON.Vector3(1, 0, 0), -Math.PI / 2)
         // frontMesh.translate(new BABYLON.Vector3(1, 0, 0), 1)
 
+        // Bevel 경로 생성
+        const { depth: bevelDepth, segments: bevelSegments } = bevelOptions
+        // const beveledPaths = createBeveledPaths(polygonPath, bevelDepth, bevelSize, bevelSegments, bevelDepth);
+        const beveledPaths = createBeveledPaths(polygonPath, bevelDepth, 0.2, bevelSegments)
+
+        const bevelMesh = BABYLON.MeshBuilder.CreateRibbon(
+          "bevelMesh",
+          {
+            pathArray: beveledPaths,
+            closeArray: true,
+            closePath: true
+          },
+          scene
+        );
+
         const sideMesh = BABYLON.ExtrudeShape('letterMesh', {
           shape: polygonPath,
-          path: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, extrusionOptions.depth)],
+          path: [new BABYLON.Vector3(0, 0, bevelDepth), new BABYLON.Vector3(0, 0, extrusionOptions.depth - bevelDepth)],
           // scale: extrusionOptions.scale,
           rotation: Math.PI * extrusionOptions.rotation,
           closeShape: true,
           closePath: true,
           // cap: BABYLON.Mesh.CAP_ALL,
         })
+        // bevelDepth가 extrusion.depth보다 커지면 안 됨!!
 
-        const letterMesh = BABYLON.Mesh.MergeMeshes([frontMesh, sideMesh], true)
+        const letterMesh = BABYLON.Mesh.MergeMeshes([frontMesh, bevelMesh, sideMesh], true)
+        frontMesh.isEnabled(false)
+        bevelMesh.isEnabled(false)
+        sideMesh.isEnabled(false)
 
         if (!letterMesh) return
 
@@ -250,8 +270,6 @@ export default function SceneComponent({
 
         letterMesh.position.x = x
         // letterMesh.position.y = y
-        // bevelMesh.position.x = x
-        frontMesh.position.x = x
 
         x += letterWidth / 2 + letterSpacing
 
