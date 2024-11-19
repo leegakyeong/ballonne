@@ -26,7 +26,7 @@ const defaultExtrusionOptions = {
 const defaultStandardMaterialOptions = {
   diffuseColor: new BABYLON.Color3(1, 0.8, 0.9),
   specularColor: new BABYLON.Color3(1, 0.8, 0.9),
-  emissiveColor: new BABYLON.Color3(0, 0, 0),
+  emissiveColor: new BABYLON.Color3(0.7, 0.2, 0.3),
   ambientColor: new BABYLON.Color3(1, 0.8, 0.9),
   alpha: 1,
 }

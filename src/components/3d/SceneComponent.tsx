@@ -188,7 +188,7 @@ export default function SceneComponent({
     letterAppearanceAnimation.setEasingFunction(easingFunction)
 
     if (letter !== ' ') letterMesh.animations.push(letterAppearanceAnimation)
-    scene.beginAnimation(letterMesh, 0, 120, false, 1, isDelete ? () => letterMesh.dispose() : undefined)
+    scene.beginAnimation(letterMesh, 0, 120, false, 1, isDelete ? () => letterMesh.dispose() : () => textMeshRef.current.push(letterMesh))
   }
 
   // set up basic engine and scene
@@ -201,7 +201,7 @@ export default function SceneComponent({
     engineRef.current = engine
 
     const scene = new BABYLON.Scene(engine)
-    scene.clearColor = new BABYLON.Color4(1, 0.9, 0.95, 1)
+    scene.clearColor = new BABYLON.Color4(0.8, 0.9, 1, 1)
 
     sceneRef.current = scene
 
@@ -247,10 +247,6 @@ export default function SceneComponent({
         textMeshRef.current.forEach((mesh) => mesh.dispose())
         textMeshRef.current = []
 
-        const compiler = await Compiler.Build(wasmUrl);
-        const font = await Font.Install("/src/assets/NotoSansKR-Regular.ttf", compiler, opentype);
-        const builder = new TextMeshBuilder(BABYLON, earcut)
-
         letterPosRef.current = { x: 0, y: 0 }
         text.split('').forEach((letter) => {
 
@@ -259,8 +255,6 @@ export default function SceneComponent({
           if (!letterMesh) return
 
           positionLetterMesh(letter, letterMesh, scene)
-
-          textMeshRef.current.push(letterMesh)
         })
 
         return
@@ -273,8 +267,6 @@ export default function SceneComponent({
         if (!letterMesh) return
 
         positionLetterMesh(lastLetter, letterMesh, scene)
-
-        textMeshRef.current.push(letterMesh)
       } else if (text < prevText) {
         const letterMesh = textMeshRef.current[textMeshRef.current.length - 1]
 
