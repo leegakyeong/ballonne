@@ -20,10 +20,10 @@ export default function SliderSection({
   onValueChange,
 }: SliderSectionProps) {
   return (
-    <div className="mb-4">
-      <div className="flex justify-between mb-2">
-        <label htmlFor={name}>{name}</label>
-        <span>{value}</span>
+    <div className="mb-5">
+      <div className="flex justify-between mb-3">
+        <label htmlFor={name} className="text-xs font-medium">{name}</label>
+        <span className="text-xs text-zinc-500">{value}</span>
       </div>
       <Slider
         name={name}
